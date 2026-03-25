@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase";
 import OptionTile from "@/components/ui/OptionTile";
 
 // ─── Question data ─────────────────────────────────────────────────────────────
@@ -81,31 +83,56 @@ const slideVariants: Variants = {
 
 export default function WarmupPage() {
   const router = useRouter();
-  const [step, setStep] = useState(0); // 0, 1, 2
+  const supabaseRef = useRef<SupabaseClient | null>(null);
+  function getSupabase(): SupabaseClient {
+    if (!supabaseRef.current) supabaseRef.current = createClient();
+    return supabaseRef.current;
+  }
+
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [pending, setPending] = useState<string | null>(null); // id being animated before advance
+  const [pending, setPending] = useState<string | null>(null);
+
+  // Generate or restore anonymous session ID
+  useEffect(() => {
+    if (!localStorage.getItem("prodigy_anonymous_id")) {
+      localStorage.setItem("prodigy_anonymous_id", crypto.randomUUID());
+    }
+  }, []);
 
   const current = questions[step];
 
   function handleSelect(optionId: string) {
-    if (pending) return; // block double-tap during animation
+    if (pending) return;
     setPending(optionId);
     setAnswers((prev) => ({ ...prev, [current.id]: optionId }));
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setPending(null);
       if (step < questions.length - 1) {
         setStep((s) => s + 1);
       } else {
         const finalAnswers = { ...answers, [current.id]: optionId };
-        localStorage.setItem(
-          "prodigy_warmup",
-          JSON.stringify({
-            background: finalAnswers.background ?? "",
-            experience: finalAnswers.experience ?? "",
-            industry: finalAnswers.industry ?? "",
-          })
-        );
+        const warmup = {
+          background: finalAnswers.background ?? "",
+          experience: finalAnswers.experience ?? "",
+          industry:   finalAnswers.industry   ?? "",
+        };
+
+        // Save to localStorage (works without internet, survives OAuth redirect)
+        localStorage.setItem("prodigy_warmup", JSON.stringify(warmup));
+
+        // Save to Supabase pre_signup_sessions (persists even if localStorage cleared)
+        const anonymousId = localStorage.getItem("prodigy_anonymous_id");
+        if (anonymousId) {
+          await getSupabase()
+            .from("pre_signup_sessions")
+            .upsert(
+              { anonymous_id: anonymousId, ...warmup },
+              { onConflict: "anonymous_id" }
+            );
+        }
+
         router.push("/insight");
       }
     }, 350);

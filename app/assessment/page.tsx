@@ -4,6 +4,8 @@ import { Suspense, useState, useCallback, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase";
 
 import { questions } from "@/lib/questions";
 import { selfRatings } from "@/lib/self-ratings";
@@ -85,6 +87,29 @@ const transitionVariants: Variants = {
 function AssessmentContent() {
   const router = useRouter();
   const params = useSearchParams();
+  const supabaseRef = useRef<SupabaseClient | null>(null);
+  function getSupabase(): SupabaseClient {
+    if (!supabaseRef.current) supabaseRef.current = createClient();
+    return supabaseRef.current;
+  }
+
+  // Claim pre-signup session — links anonymous warmup data to the signed-in user
+  useEffect(() => {
+    const claim = async () => {
+      const anonymousId = localStorage.getItem("prodigy_anonymous_id");
+      if (!anonymousId) return;
+      const { data: { session } } = await getSupabase().auth.getSession();
+      if (!session) return;
+      await getSupabase()
+        .from("pre_signup_sessions")
+        .update({ user_id: session.user.id })
+        .eq("anonymous_id", anonymousId)
+        .is("user_id", null);
+      localStorage.removeItem("prodigy_anonymous_id");
+    };
+    claim();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Read warmup from localStorage (set by warmup page)
   const warmup = (() => {
