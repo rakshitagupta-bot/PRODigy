@@ -1,33 +1,19 @@
-import type { AssessmentDimension, ArchetypeKey, Subcategory, GoalDuration, RoadmapResource } from "@/types";
+import type {
+  AssessmentDimension,
+  ArchetypeKey,
+  Subcategory,
+  GoalDuration,
+  RoadmapResource,
+  DailyTask,
+  WeekPlan,
+  DailyPlan,
+  ReflectionQuestion,
+  Dimension,
+  RoadmapContent,
+} from "@/types";
 import type { ScoreProfile } from "@/lib/scoring";
-import type { RoadmapContent } from "@/types";
 
 export type { Subcategory, GoalDuration, RoadmapResource };
-
-// ─── Legacy content.ts-only types ────────────────────────────────────────────
-
-export interface ContentDailyTask {
-  resource:    RoadmapResource;
-  subcategory: Subcategory;
-  status:      "red" | "amber" | "green";
-  whyThis:     string;
-}
-
-export interface ContentWeekPlan {
-  weekNumber:       number;
-  title:            string;
-  primaryDimension: AssessmentDimension;
-  days:             { dayNumber: number; tasks: ContentDailyTask[] }[];
-}
-
-export interface ReflectionQuestion {
-  id:           string;
-  subcategory:  Subcategory;
-  stem:         string;
-  options:      [string, string, string];
-  correctIndex: 0 | 1 | 2;
-  explanation:  string;
-}
 
 // ─── Subcategory metadata ─────────────────────────────────────────────────────
 
@@ -56,7 +42,7 @@ export const SUBCAT_TO_DIM: Record<Subcategory, AssessmentDimension> = {
 
 const CANONICAL_SUBCATS = new Set<string>(Object.keys(SUBCAT_TO_DIM));
 
-const GOAL_DAYS: Record<GoalDuration, number> = {
+export const GOAL_DAYS: Record<GoalDuration, number> = {
   "1_month":   30,
   "3_months":  90,
   "5_months":  150,
@@ -68,7 +54,7 @@ const MAX_PER_DAY: Record<GoalDuration, number> = {
   "5_months":  1,
 };
 
-const WHY_THIS: Record<Subcategory, string> = {
+export const WHY_THIS: Record<Subcategory, string> = {
   "problem framing":         "Most PM interviews start here — reframing messy briefs separates senior PMs from junior ones.",
   "strategic tradeoffs":     "Every roadmap is a series of bets. This skill makes you credible in leadership meetings.",
   "data-driven diagnosis":   "PMs who can't read data fly blind. This is table stakes at any tech company.",
@@ -89,6 +75,24 @@ const WHY_THIS: Record<Subcategory, string> = {
   "executive communication": "Speaking in P&L terms unlocks executive buy-in. Most PMs never learn this.",
   "facilitation":            "When a room is stuck, the PM who unblocks it earns authority without hierarchy.",
   "business case framing":   "Same message, wrong frame = zero buy-in. Financial framing is a force multiplier.",
+};
+
+// ─── AssessmentDimension → Dimension mapping ──────────────────────────────────
+
+const ASSESSMENT_DIM_TO_DIMENSION: Record<AssessmentDimension, Dimension> = {
+  thinking_strategy:  "strategic-thinking",
+  user_research:      "product-sense",
+  execution:          "execution-depth",
+  technical_fluency:  "technical-fluency",
+  communication:      "communication",
+};
+
+const DIMENSION_LABELS: Record<AssessmentDimension, string> = {
+  thinking_strategy:  "Strategic Thinking",
+  user_research:      "Product Sense",
+  execution:          "Execution",
+  technical_fluency:  "Technical Fluency",
+  communication:      "Communication",
 };
 
 // ─── Resource builder (keeps the array compact) ───────────────────────────────
@@ -268,7 +272,13 @@ function q(
   correctIndex: 0 | 1 | 2,
   explanation: string
 ): ReflectionQuestion {
-  return { id, subcategory, stem, options, correctIndex, explanation };
+  return {
+    id,
+    subcategory,
+    stem,
+    options: options.map((text, i) => ({ text, isCorrect: i === correctIndex })),
+    explanation,
+  };
 }
 
 // ─── 40 reflection questions (2 per subcategory) ──────────────────────────────
@@ -479,7 +489,7 @@ const REFLECTION_QUESTIONS: ReflectionQuestion[] = [
 // ─── Exported: flat resource array + getter ───────────────────────────────────
 
 export function getResourcesBySubcategory(subcat: Subcategory): RoadmapResource[] {
-  return allResources.filter((r) => r.subcategory === subcat);
+  return allResources.filter((res) => res.subcategory === subcat);
 }
 
 // ─── Exported: reflection questions ──────────────────────────────────────────
@@ -488,8 +498,8 @@ export function getReflectionQuestions(
   completedSubcategories: Subcategory[],
   dayNumber: number
 ): ReflectionQuestion[] {
-  const eligible = REFLECTION_QUESTIONS.filter((q) =>
-    completedSubcategories.includes(q.subcategory)
+  const eligible = REFLECTION_QUESTIONS.filter((rq) =>
+    completedSubcategories.includes(rq.subcategory)
   );
   if (eligible.length === 0) return [];
 
@@ -505,7 +515,7 @@ export function generateDailyPlan(
   profile:    ScoreProfile,
   duration:   GoalDuration,
   dayNumber:  number
-): ContentDailyTask[] {
+): DailyTask[] {
   const daysAvailable = GOAL_DAYS[duration];
   const maxPerDay     = MAX_PER_DAY[duration];
 
@@ -515,11 +525,11 @@ export function generateDailyPlan(
     .sort((a, b) => a.score - b.score); // lowest score = biggest gap = first
 
   // Build flat ordered resource list
-  const ordered: { resource: RoadmapResource; subcategory: Subcategory; status: "red" | "amber" | "green" }[] = [];
+  const ordered: { resource: RoadmapResource; subcategory: Subcategory }[] = [];
   for (const gap of relevantGaps) {
     const subcat = gap.subcategory as Subcategory;
     getResourcesBySubcategory(subcat).forEach((res) => {
-      ordered.push({ resource: res, subcategory: subcat, status: gap.status });
+      ordered.push({ resource: res, subcategory: subcat });
     });
   }
 
@@ -563,11 +573,13 @@ export function generateDailyPlan(
     }
   }
 
-  return dayTasks.map(({ resource, subcategory, status }) => ({
-    resource,
+  return dayTasks.map(({ resource, subcategory }) => ({
+    id:          `${dayNumber}-${resource.id}`,
+    day:         dayNumber,
     subcategory,
-    status,
-    whyThis: WHY_THIS[subcategory] ?? "",
+    resource,
+    isUnlocked:  true,
+    isCompleted: false,
   }));
 }
 
@@ -576,20 +588,34 @@ export function generateDailyPlan(
 export function generateWeeklyPlan(
   profile:  ScoreProfile,
   duration: GoalDuration
-): ContentWeekPlan[] {
+): WeekPlan[] {
   const daysTotal = GOAL_DAYS[duration];
   const weekCount = Math.ceil(daysTotal / 7);
-  const plans: ContentWeekPlan[] = [];
+  const plans: WeekPlan[] = [];
+  const baseDate = new Date();
 
   for (let w = 0; w < weekCount; w++) {
-    const days: { dayNumber: number; tasks: ContentDailyTask[] }[] = [];
+    const days: DailyPlan[] = [];
     const subcatCount: Partial<Record<Subcategory, number>> = {};
 
     for (let d = 1; d <= 7; d++) {
       const dayNum = w * 7 + d;
       if (dayNum > daysTotal) break;
       const tasks = generateDailyPlan(profile, duration, dayNum);
-      days.push({ dayNumber: dayNum, tasks });
+
+      // Compute date for this day (base + offset)
+      const dayDate = new Date(baseDate);
+      dayDate.setDate(baseDate.getDate() + (dayNum - 1));
+
+      days.push({
+        day:                 dayNum,
+        date:                dayDate.toISOString(),
+        tasks,
+        isToday:             false,
+        isCompleted:         false,
+        reflectionCompleted: false,
+      });
+
       tasks.forEach((t) => {
         subcatCount[t.subcategory] = (subcatCount[t.subcategory] ?? 0) + 1;
       });
@@ -602,14 +628,17 @@ export function generateWeeklyPlan(
       if (count > maxCount) { maxCount = count; primarySubcat = sc; }
     }
 
-    const primaryDim = SUBCAT_TO_DIM[primarySubcat];
-    const weekLabel  = w === 0 ? "Foundation" : w < 4 ? "Build" : w < 8 ? "Deepen" : "Reinforce";
+    const primaryAssessmentDim = SUBCAT_TO_DIM[primarySubcat];
+    const primaryDimension: Dimension = ASSESSMENT_DIM_TO_DIMENSION[primaryAssessmentDim];
+    const dimLabel = DIMENSION_LABELS[primaryAssessmentDim];
+    const weekLabel = w === 0 ? "Foundation" : w < 4 ? "Build" : w < 8 ? "Deepen" : "Reinforce";
 
     plans.push({
-      weekNumber:       w + 1,
-      title:            `${weekLabel}: ${primarySubcat}`,
-      primaryDimension: primaryDim,
+      weekNumber: w + 1,
+      title:      `Week ${w + 1} · ${weekLabel}: ${dimLabel}`,
+      dimension:  primaryDimension,
       days,
+      progress:   0,
     });
   }
 
