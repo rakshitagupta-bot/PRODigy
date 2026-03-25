@@ -227,7 +227,7 @@ function CTAButton({
 }) {
   return (
     <Link
-      href="/signup"
+      href="/warmup"
       className={[
         "relative inline-flex items-center justify-center font-outfit font-semibold rounded-xl text-white overflow-hidden",
         "transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",

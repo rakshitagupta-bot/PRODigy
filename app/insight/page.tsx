@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase";
 import {
   getInsight,
   getExperienceFrame,
@@ -37,11 +38,18 @@ function FadeUp({
 
 export default function InsightPage() {
   const router = useRouter();
+  const supabaseRef = useRef<SupabaseClient | null>(null);
+  function getSupabase(): SupabaseClient {
+    if (!supabaseRef.current) supabaseRef.current = createClient();
+    return supabaseRef.current;
+  }
+
   const [warmup, setWarmup] = useState<{
     background: string;
     experience: string;
     industry: string;
   } | null>(null);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   // Read warmup answers saved by the warmup page
   useEffect(() => {
@@ -53,10 +61,17 @@ export default function InsightPage() {
         setWarmup({ background: "other", experience: "", industry: "other" });
       }
     } else {
-      // No warmup data — send back to warmup
       router.replace("/warmup");
     }
   }, [router]);
+
+  // Check if already signed in
+  useEffect(() => {
+    getSupabase().auth.getSession().then(({ data }) => {
+      setIsSignedIn(!!data.session);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!warmup) {
     return (
@@ -253,8 +268,8 @@ export default function InsightPage() {
         {/* CTA */}
         <FadeUp delay={0.55}>
           <div className="space-y-3 pt-2">
-            <Link
-              href="/assessment"
+            <button
+              onClick={() => router.push(isSignedIn ? "/assessment" : "/signup")}
               className="relative w-full flex items-center justify-center gap-2 font-outfit font-semibold rounded-xl text-white px-8 py-4 text-base overflow-hidden transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
               style={{
                 background:
@@ -265,10 +280,10 @@ export default function InsightPage() {
                   "0 0 24px rgba(74,108,247,0.35), 0 0 48px rgba(107,91,255,0.15)",
               }}
             >
-              Unlock full diagnostic →
-            </Link>
+              {isSignedIn ? "Start full diagnostic →" : "Sign in to continue →"}
+            </button>
             <p className="text-center text-xs text-white/25 font-outfit">
-              22 questions · ~12 minutes · ₹499
+              22 questions · ~12 minutes · free
             </p>
           </div>
         </FadeUp>
