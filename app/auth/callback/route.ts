@@ -37,6 +37,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/signup?error=session_failed`);
   }
 
-  // Session established. Redirect to /insight — warmup answers are in localStorage.
-  return NextResponse.redirect(`${origin}/insight`);
+  return NextResponse.redirect(`${origin}/assessment`);
 }

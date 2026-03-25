@@ -57,8 +57,7 @@ function SignupContent() {
   useEffect(() => {
     getSupabase().auth.getSession().then(({ data }) => {
       if (!data.session) return;
-      const warmup = localStorage.getItem("prodigy_warmup");
-      router.replace(warmup ? "/insight" : "/report");
+      router.replace("/assessment");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);

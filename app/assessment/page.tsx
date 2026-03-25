@@ -86,13 +86,6 @@ function AssessmentContent() {
   const router = useRouter();
   const params = useSearchParams();
 
-  // ── Payment gate ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!localStorage.getItem("prodigy_paid")) {
-      router.replace("/payment");
-    }
-  }, [router]);
-
   // Read warmup from localStorage (set by warmup page)
   const warmup = (() => {
     try {

@@ -227,7 +227,7 @@ function CTAButton({
 }) {
   return (
     <Link
-      href="/warmup"
+      href="/signup"
       className={[
         "relative inline-flex items-center justify-center font-outfit font-semibold rounded-xl text-white overflow-hidden",
         "transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
@@ -520,7 +520,7 @@ export default function LandingPage() {
               Ready to stop guessing and start getting hired?
             </h2>
             <p className="text-white/55 font-outfit text-sm leading-relaxed max-w-md mx-auto">
-              Get your PM Readiness Score in 12 minutes. No signup. No payment.
+              Get your PM Readiness Score in 12 minutes. Free to use.
               Just clarity.
             </p>
             <CTAButton size="lg" />
