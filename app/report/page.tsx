@@ -373,45 +373,16 @@ function ReportContent() {
           </h2>
 
           <p className="text-white/70 text-sm font-outfit leading-relaxed">
-            Based on your {archetype.name} archetype and your scores, here&apos;s what a focused
-            development path looks like:
+            You have a personalised roadmap ready — daily tasks built around your weakest areas as a{" "}
+            <span className="text-white/90">{archetype.name}</span>.
           </p>
-
-          {/* Timeline pills */}
-          <div className="flex flex-wrap gap-2.5">
-            {[
-              { period: "1 Month", goal: `Close gaps in ${gap1 || "your priority areas"}` },
-              { period: "3 Months", goal: `Build a PM portfolio project targeting ${archetype.targetCompanies[0]}` },
-              { period: "6 Months", goal: "Apply to PM roles with full readiness" },
-            ].map(({ period, goal }) => (
-              <div
-                key={period}
-                className="flex items-start gap-3 rounded-xl px-4 py-3 w-full"
-                style={{
-                  background: "rgba(107,91,255,0.08)",
-                  border: "1px solid rgba(107,91,255,0.18)",
-                }}
-              >
-                <span
-                  className="text-[11px] font-bold font-outfit px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5"
-                  style={{
-                    background: "rgba(107,91,255,0.2)",
-                    color: "#a5b4fc",
-                  }}
-                >
-                  {period}
-                </span>
-                <span className="text-sm text-white/60 font-outfit leading-snug">{goal}</span>
-              </div>
-            ))}
-          </div>
 
           <button
             onClick={() => router.push("/roadmap")}
             className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-outfit font-semibold text-sm text-white transition-all duration-200 active:scale-[0.98] hover:opacity-90"
             style={{ background: "linear-gradient(135deg, #4A6CF7, #8B5CF6)" }}
           >
-            Build my 4-week roadmap
+            Build my roadmap
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
