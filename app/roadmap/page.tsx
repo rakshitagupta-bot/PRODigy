@@ -125,7 +125,7 @@ function GoalSelector({
           How long until your PM interview?
         </h1>
         <p className="text-sm text-white/45 font-outfit max-w-xs mx-auto">
-          Pick a goal and we'll generate a daily task plan matched to your weakest areas.
+          Pick a goal and we&apos;ll generate a daily task plan matched to your weakest areas.
         </p>
       </motion.div>
 
@@ -499,7 +499,7 @@ export default function RoadmapPage() {
             {/* ── Today's task ─────────────────────────────────────────────── */}
             <div className="space-y-2">
               <p className="text-xs text-white/35 font-outfit uppercase tracking-wider">
-                Today's task
+                Today&apos;s task
               </p>
               {todayTask ? (
                 <TaskCard
@@ -520,7 +520,7 @@ export default function RoadmapPage() {
                     Plan complete!
                   </p>
                   <p className="text-xs text-white/40 font-outfit mt-1">
-                    You've finished all {goal} days. Time to apply for that PM role.
+                    You&apos;ve finished all {goal} days. Time to apply for that PM role.
                   </p>
                 </div>
               )}

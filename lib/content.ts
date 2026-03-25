@@ -640,7 +640,6 @@ export function generateWeeklyPlan(
     }
 
     const primaryDim = SUBCAT_TO_DIM[primarySubcat];
-    const dimLabel   = DIMENSION_LABELS[primaryDim];
     const weekLabel  = w === 0 ? "Foundation" : w < 4 ? "Build" : w < 8 ? "Deepen" : "Reinforce";
 
     plans.push({
