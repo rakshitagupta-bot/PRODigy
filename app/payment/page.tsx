@@ -83,8 +83,8 @@ export default function PaymentPage() {
         setBackground(w.background ?? "");
       } catch {}
     }
-    // Already paid — skip straight to assessment
-    if (localStorage.getItem("prodigy_paid")) router.replace("/assessment");
+    // Already paid — skip straight to results
+    if (localStorage.getItem("prodigy_paid")) router.replace("/results");
   }, [router]);
 
   const bgLabel: Record<string, string> = {
@@ -111,7 +111,7 @@ export default function PaymentPage() {
     // Store paid flag + transaction ID for your records
     localStorage.setItem("prodigy_paid", "true");
     localStorage.setItem("prodigy_txn",  txnId.trim());
-    setTimeout(() => router.push("/assessment"), 800);
+    setTimeout(() => router.push("/results"), 800);
   }
 
   return (

@@ -175,7 +175,7 @@ function AssessmentContent() {
         overall: String(profile.overallReadiness),
         archetype: profile.archetype,
       });
-      router.push(`/results?${urlParams.toString()}`);
+      router.push(`/payment?${urlParams.toString()}`);
     },
     [bg, exp, industry, router]
   );
