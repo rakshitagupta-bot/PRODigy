@@ -106,7 +106,7 @@ export default function WarmupPage() {
             industry: finalAnswers.industry ?? "",
           })
         );
-        router.push("/signup");
+        router.push("/insight");
       }
     }, 350);
   }
