@@ -1,6 +1,5 @@
 import type { AssessmentDimension, ArchetypeKey } from "@/types";
 import type { ScoreProfile } from "@/lib/scoring";
-import { DIMENSION_LABELS } from "@/lib/scoring";
 import type { RoadmapContent } from "@/types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
