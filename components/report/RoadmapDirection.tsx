@@ -4,7 +4,7 @@ interface RoadmapDirectionProps {
   week: RoadmapWeek;
 }
 
-const resourceIcons = { video: "▶️", article: "📄", exercise: "✏️" };
+const resourceIcons = { video: "▶️", text: "📄", exercise: "✏️" };
 
 export default function RoadmapDirection({ week }: RoadmapDirectionProps) {
   return (

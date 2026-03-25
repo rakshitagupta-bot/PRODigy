@@ -1,59 +1,23 @@
-import type { AssessmentDimension, ArchetypeKey } from "@/types";
+import type { AssessmentDimension, ArchetypeKey, Subcategory, GoalDuration, RoadmapResource } from "@/types";
 import type { ScoreProfile } from "@/lib/scoring";
 import type { RoadmapContent } from "@/types";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+export type { Subcategory, GoalDuration, RoadmapResource };
 
-export type Subcategory =
-  | "problem framing"
-  | "strategic tradeoffs"
-  | "data-driven diagnosis"
-  | "prioritisation"
-  | "onboarding design"
-  | "retention mechanics"
-  | "user segmentation"
-  | "user psychology"
-  | "launch decisions"
-  | "post-launch analysis"
-  | "spec precision"
-  | "scope negotiation"
-  | "estimation challenge"
-  | "data quality instinct"
-  | "build vs buy"
-  | "engineering partnership"
-  | "conflict resolution"
-  | "executive communication"
-  | "facilitation"
-  | "business case framing";
+// ─── Legacy content.ts-only types ────────────────────────────────────────────
 
-export type GoalDuration = "1_month" | "3_months" | "5_months";
-
-export interface RoadmapResource {
-  id:         string;
-  subcategory: Subcategory;
-  dimension:  AssessmentDimension;
-  type:       "video" | "article" | "exercise";
-  title:      string;
-  url:        string;
-  source:     string;
-  duration:   number;    // minutes
-  biteSized:  boolean;   // true if duration <= 10
-  difficulty: "beginner" | "intermediate" | "advanced";
-  whyThis:    string;
-}
-
-export interface DailyTask {
+export interface ContentDailyTask {
   resource:    RoadmapResource;
   subcategory: Subcategory;
   status:      "red" | "amber" | "green";
   whyThis:     string;
 }
 
-export interface WeekPlan {
+export interface ContentWeekPlan {
   weekNumber:       number;
   title:            string;
   primaryDimension: AssessmentDimension;
-  days:             { dayNumber: number; tasks: DailyTask[] }[];
+  days:             { dayNumber: number; tasks: ContentDailyTask[] }[];
 }
 
 export interface ReflectionQuestion {
@@ -132,20 +96,20 @@ const WHY_THIS: Record<Subcategory, string> = {
 function r(
   id: string,
   subcategory: Subcategory,
-  type: "video" | "article" | "exercise",
+  type: "video" | "text" | "exercise",
   title: string,
   url: string,
   source: string,
-  duration: number,
+  durationMins: number,
   difficulty: "beginner" | "intermediate" | "advanced"
 ): RoadmapResource {
   return {
     id, subcategory,
-    dimension:  SUBCAT_TO_DIM[subcategory],
-    type, title, url, source, duration,
-    biteSized:  duration <= 10,
+    type, title, url, source,
+    duration:         `${durationMins} min`,
+    biteSized:        durationMins <= 10,
     difficulty,
-    whyThis:    WHY_THIS[subcategory],
+    whyThisTemplate:  WHY_THIS[subcategory],
   };
 }
 
@@ -156,141 +120,141 @@ export const allResources: RoadmapResource[] = [
   // ── problem framing ──────────────────────────────────────────────────────────
   r("pf-v1", "problem framing", "video",    "How to Frame Product Problems Like a Senior PM",         "https://www.youtube.com/watch?v=h25eElbdANQ", "Exponent", 20, "intermediate"),
   r("pf-v2", "problem framing", "video",    "Problem Definition in Product Strategy",                  "https://www.youtube.com/watch?v=0bF7oX39N4A", "Lenny's Podcast", 18, "intermediate"),
-  r("pf-a1", "problem framing", "article",  "The Reframing Trap: Why PMs Solve the Wrong Problem",    "https://review.firstround.com/the-pm-skills-that-matter-most", "First Round Review", 8, "intermediate"),
-  r("pf-a2", "problem framing", "article",  "The 5 Whys: A PM's Most Underused Diagnostic Tool",      "https://www.mindtheproduct.com/the-5-whys-for-product-managers/", "Mind the Product", 6, "beginner"),
+  r("pf-a1", "problem framing", "text",  "The Reframing Trap: Why PMs Solve the Wrong Problem",    "https://review.firstround.com/the-pm-skills-that-matter-most", "First Round Review", 8, "intermediate"),
+  r("pf-a2", "problem framing", "text",  "The 5 Whys: A PM's Most Underused Diagnostic Tool",      "https://www.mindtheproduct.com/the-5-whys-for-product-managers/", "Mind the Product", 6, "beginner"),
   r("pf-e1", "problem framing", "exercise", "Problem Reframing Drill: 3 Real Briefs, 10 Minutes",      "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── strategic tradeoffs ──────────────────────────────────────────────────────
   r("st-v1", "strategic tradeoffs", "video",    "Good Strategy vs Bad Strategy — What PMs Need to Know",   "https://www.youtube.com/watch?v=Pj0cME8Drpc", "YouTube", 22, "advanced"),
   r("st-v2", "strategic tradeoffs", "video",    "How Senior PMs Handle Hard Product Tradeoffs",            "https://www.youtube.com/watch?v=Ii6VELPgDL8", "Reforge", 20, "intermediate"),
-  r("st-a1", "strategic tradeoffs", "article",  "Aggregation Theory and Why Platform Tradeoffs Are Hard",  "https://stratechery.com/aggregation-theory/", "Stratechery", 10, "advanced"),
-  r("st-a2", "strategic tradeoffs", "article",  "The PM's Framework for Segment Tradeoffs",               "https://www.reforge.com/blog/choosing-your-segment", "Reforge", 7, "intermediate"),
+  r("st-a1", "strategic tradeoffs", "text",  "Aggregation Theory and Why Platform Tradeoffs Are Hard",  "https://stratechery.com/aggregation-theory/", "Stratechery", 10, "advanced"),
+  r("st-a2", "strategic tradeoffs", "text",  "The PM's Framework for Segment Tradeoffs",               "https://www.reforge.com/blog/choosing-your-segment", "Reforge", 7, "intermediate"),
   r("st-e1", "strategic tradeoffs", "exercise", "Score 5 Product Decisions Using Impact vs Complexity",   "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── data-driven diagnosis ────────────────────────────────────────────────────
   r("dd-v1", "data-driven diagnosis", "video",    "Product Analytics 101: Funnels, Cohorts, and Retention",  "https://www.youtube.com/watch?v=vhekbT7JWRM", "Amplitude", 25, "beginner"),
   r("dd-v2", "data-driven diagnosis", "video",    "How to Debug a Broken Metric",                            "https://www.youtube.com/watch?v=FJLKIiB8mNc", "Reforge", 20, "intermediate"),
-  r("dd-a1", "data-driven diagnosis", "article",  "The Metrics That Lie: When DAU Misleads You",             "https://amplitude.com/blog/metrics-that-mislead", "Amplitude", 8, "intermediate"),
-  r("dd-a2", "data-driven diagnosis", "article",  "The PM's Starter Kit for Metric Ownership",               "https://www.lennysnewsletter.com/p/north-star-metric", "Lenny's Newsletter", 7, "beginner"),
+  r("dd-a1", "data-driven diagnosis", "text",  "The Metrics That Lie: When DAU Misleads You",             "https://amplitude.com/blog/metrics-that-mislead", "Amplitude", 8, "intermediate"),
+  r("dd-a2", "data-driven diagnosis", "text",  "The PM's Starter Kit for Metric Ownership",               "https://www.lennysnewsletter.com/p/north-star-metric", "Lenny's Newsletter", 7, "beginner"),
   r("dd-e1", "data-driven diagnosis", "exercise", "Diagnose a Metrics Discrepancy: 3 Scenarios",             "https://www.tryexponent.com/practice/metrics", "Exponent Practice", 10, "intermediate"),
 
   // ── prioritisation ───────────────────────────────────────────────────────────
   r("pr-v1", "prioritisation", "video",    "Prioritization Frameworks That Actually Work",              "https://www.youtube.com/watch?v=ZgmKmkDuGVA", "Exponent", 22, "intermediate"),
   r("pr-v2", "prioritisation", "video",    "Opportunity Scoring: Teresa Torres on Prioritisation",      "https://www.youtube.com/watch?v=sDnaF8TzgM0", "Product Talk", 20, "intermediate"),
-  r("pr-a1", "prioritisation", "article",  "RICE Scoring Model Explained",                             "https://www.productplan.com/glossary/rice-scoring-model/", "ProductPlan", 6, "beginner"),
-  r("pr-a2", "prioritisation", "article",  "How I Prioritize Features at Scale",                       "https://www.lennysnewsletter.com/p/how-to-prioritize-features", "Lenny's Newsletter", 8, "intermediate"),
+  r("pr-a1", "prioritisation", "text",  "RICE Scoring Model Explained",                             "https://www.productplan.com/glossary/rice-scoring-model/", "ProductPlan", 6, "beginner"),
+  r("pr-a2", "prioritisation", "text",  "How I Prioritize Features at Scale",                       "https://www.lennysnewsletter.com/p/how-to-prioritize-features", "Lenny's Newsletter", 8, "intermediate"),
   r("pr-e1", "prioritisation", "exercise", "RICE Score 5 Competing Features from a Real Product",      "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── onboarding design ────────────────────────────────────────────────────────
   r("od-v1", "onboarding design", "video",    "Onboarding UX That Converts: The Science of the Aha Moment", "https://www.youtube.com/watch?v=qmfpI6jk8xg", "CXL Institute", 20, "intermediate"),
   r("od-v2", "onboarding design", "video",    "How Slack Nailed Onboarding for Every User Type",             "https://www.youtube.com/watch?v=xQQo-TkPFrg", "Lenny's Podcast", 18, "intermediate"),
-  r("od-a1", "onboarding design", "article",  "Find Your Product's Aha Moment",                             "https://review.firstround.com/find-your-products-aha-moment", "First Round Review", 8, "intermediate"),
-  r("od-a2", "onboarding design", "article",  "Value Before Ask: The Onboarding Design Pattern That Works",  "https://www.intercom.com/blog/onboarding-users/", "Intercom", 6, "beginner"),
+  r("od-a1", "onboarding design", "text",  "Find Your Product's Aha Moment",                             "https://review.firstround.com/find-your-products-aha-moment", "First Round Review", 8, "intermediate"),
+  r("od-a2", "onboarding design", "text",  "Value Before Ask: The Onboarding Design Pattern That Works",  "https://www.intercom.com/blog/onboarding-users/", "Intercom", 6, "beginner"),
   r("od-e1", "onboarding design", "exercise", "Critique the Onboarding of 2 Apps You Use Daily",            "https://www.tryexponent.com/practice/product-design", "Exponent Practice", 10, "beginner"),
 
   // ── retention mechanics ──────────────────────────────────────────────────────
   r("rm-v1", "retention mechanics", "video",    "Hooked: How to Build Habit-Forming Products",           "https://www.youtube.com/watch?v=c6y0KAIQv5g", "TEDx Nir Eyal", 15, "intermediate"),
   r("rm-v2", "retention mechanics", "video",    "What Actually Drives Retention? The Reforge Framework", "https://www.youtube.com/watch?v=Ii6VELPgDL8", "Reforge", 22, "advanced"),
-  r("rm-a1", "retention mechanics", "article",  "Retention by Cohort: How to Measure What Matters",      "https://amplitude.com/blog/cohort-retention-analysis", "Amplitude", 8, "intermediate"),
-  r("rm-a2", "retention mechanics", "article",  "Why Users Churn and How to Stop Them",                  "https://www.intercom.com/blog/why-users-churn/", "Intercom", 7, "beginner"),
+  r("rm-a1", "retention mechanics", "text",  "Retention by Cohort: How to Measure What Matters",      "https://amplitude.com/blog/cohort-retention-analysis", "Amplitude", 8, "intermediate"),
+  r("rm-a2", "retention mechanics", "text",  "Why Users Churn and How to Stop Them",                  "https://www.intercom.com/blog/why-users-churn/", "Intercom", 7, "beginner"),
   r("rm-e1", "retention mechanics", "exercise", "Map the Habit Loop for an App With Low Retention",      "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "intermediate"),
 
   // ── user segmentation ────────────────────────────────────────────────────────
   r("us-v1", "user segmentation", "video",    "Jobs to Be Done: The Framework That Changes Everything",  "https://www.youtube.com/watch?v=sfGtd2UXidU", "Bob Moesta", 22, "intermediate"),
   r("us-v2", "user segmentation", "video",    "User Segmentation for Product Managers",                 "https://www.youtube.com/watch?v=d6o_I_4jQCg", "Product School", 18, "beginner"),
-  r("us-a1", "user segmentation", "article",  "Power Users: How to Identify and Serve Your Best Segment", "https://www.lennysnewsletter.com/p/power-users", "Lenny's Newsletter", 8, "intermediate"),
-  r("us-a2", "user segmentation", "article",  "Behavioural Segmentation: Beyond Demographics",          "https://www.reforge.com/blog/behavioral-segmentation", "Reforge", 7, "beginner"),
+  r("us-a1", "user segmentation", "text",  "Power Users: How to Identify and Serve Your Best Segment", "https://www.lennysnewsletter.com/p/power-users", "Lenny's Newsletter", 8, "intermediate"),
+  r("us-a2", "user segmentation", "text",  "Behavioural Segmentation: Beyond Demographics",          "https://www.reforge.com/blog/behavioral-segmentation", "Reforge", 7, "beginner"),
   r("us-e1", "user segmentation", "exercise", "Segment the Users of a Product You Know Well",           "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── user psychology ──────────────────────────────────────────────────────────
   r("up-v1", "user psychology", "video",    "Cognitive Biases That Affect Product Decisions",         "https://www.youtube.com/watch?v=wEwGBIr_RIw", "Nielsen Norman Group", 20, "intermediate"),
   r("up-v2", "user psychology", "video",    "Understanding User Psychology for Better Products",      "https://www.youtube.com/watch?v=Qq3OiHQ-HCU", "Exponent", 18, "intermediate"),
-  r("up-a1", "user psychology", "article",  "The Jobs-to-Be-Done Interview Guide",                   "https://www.intercom.com/blog/the-jobs-to-be-done-framework/", "Intercom", 8, "intermediate"),
-  r("up-a2", "user psychology", "article",  "How to Develop Strong Product Taste",                   "https://review.firstround.com/how-to-develop-product-taste", "First Round Review", 7, "beginner"),
+  r("up-a1", "user psychology", "text",  "The Jobs-to-Be-Done Interview Guide",                   "https://www.intercom.com/blog/the-jobs-to-be-done-framework/", "Intercom", 8, "intermediate"),
+  r("up-a2", "user psychology", "text",  "How to Develop Strong Product Taste",                   "https://review.firstround.com/how-to-develop-product-taste", "First Round Review", 7, "beginner"),
   r("up-e1", "user psychology", "exercise", "Run a 15-Minute User Interview on Any Product",          "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 15, "intermediate"),
 
   // ── launch decisions ─────────────────────────────────────────────────────────
   r("ld-v1", "launch decisions", "video",    "The PM's Product Launch Framework",                     "https://www.youtube.com/watch?v=CcA-3BGXY4w", "Lenny's Podcast", 20, "intermediate"),
   r("ld-v2", "launch decisions", "video",    "How to Run a Staged Rollout",                           "https://www.youtube.com/watch?v=nYg4jNJKAI8", "Exponent", 18, "intermediate"),
-  r("ld-a1", "launch decisions", "article",  "Product Launch Checklist — What PMs Miss",              "https://www.lennysnewsletter.com/p/product-launch", "Lenny's Newsletter", 7, "beginner"),
-  r("ld-a2", "launch decisions", "article",  "The Soft Launch Decision: How to Know When to Limit Rollout", "https://www.mindtheproduct.com/soft-launch-decision/", "Mind the Product", 6, "intermediate"),
+  r("ld-a1", "launch decisions", "text",  "Product Launch Checklist — What PMs Miss",              "https://www.lennysnewsletter.com/p/product-launch", "Lenny's Newsletter", 7, "beginner"),
+  r("ld-a2", "launch decisions", "text",  "The Soft Launch Decision: How to Know When to Limit Rollout", "https://www.mindtheproduct.com/soft-launch-decision/", "Mind the Product", 6, "intermediate"),
   r("ld-e1", "launch decisions", "exercise", "Write a Launch Criteria Doc for a Feature You Know",    "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── post-launch analysis ─────────────────────────────────────────────────────
   r("pl-v1", "post-launch analysis", "video",    "The PM Playbook for Post-Launch Ownership",           "https://www.youtube.com/watch?v=5O8L6_pRCZ4", "Reforge", 22, "intermediate"),
   r("pl-v2", "post-launch analysis", "video",    "How to Run a Product Post-Mortem That Changes Things", "https://www.youtube.com/watch?v=9BLh_q77CRk", "Exponent", 18, "intermediate"),
-  r("pl-a1", "post-launch analysis", "article",  "Post-Mortem Culture at Google",                       "https://sre.google/sre-book/postmortem-culture/", "Google SRE Book", 7, "intermediate"),
-  r("pl-a2", "post-launch analysis", "article",  "What Good Retrospectives Actually Look Like",          "https://review.firstround.com/how-to-run-a-good-retrospective", "First Round Review", 8, "intermediate"),
+  r("pl-a1", "post-launch analysis", "text",  "Post-Mortem Culture at Google",                       "https://sre.google/sre-book/postmortem-culture/", "Google SRE Book", 7, "intermediate"),
+  r("pl-a2", "post-launch analysis", "text",  "What Good Retrospectives Actually Look Like",          "https://review.firstround.com/how-to-run-a-good-retrospective", "First Round Review", 8, "intermediate"),
   r("pl-e1", "post-launch analysis", "exercise", "Write a Post-Mortem for a Feature That Underperformed", "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "intermediate"),
 
   // ── spec precision ───────────────────────────────────────────────────────────
   r("sp-v1", "spec precision", "video",    "How to Write a Great PRD",                              "https://www.youtube.com/watch?v=BFbGUEcJKy4", "Gibson Biddle", 20, "intermediate"),
   r("sp-v2", "spec precision", "video",    "Amazon's 6-Pager vs the Traditional PRD",               "https://www.youtube.com/watch?v=a_SKJHLdEoA", "Exponent", 18, "intermediate"),
-  r("sp-a1", "spec precision", "article",  "Amazon's 6-Pager Memo Format Explained",                "https://www.productplan.com/glossary/amazon-6-pager/", "ProductPlan", 6, "beginner"),
-  r("sp-a2", "spec precision", "article",  "How to Write a Spec Engineering Will Actually Use",     "https://www.intercom.com/blog/writing-product-specs/", "Intercom", 8, "intermediate"),
+  r("sp-a1", "spec precision", "text",  "Amazon's 6-Pager Memo Format Explained",                "https://www.productplan.com/glossary/amazon-6-pager/", "ProductPlan", 6, "beginner"),
+  r("sp-a2", "spec precision", "text",  "How to Write a Spec Engineering Will Actually Use",     "https://www.intercom.com/blog/writing-product-specs/", "Intercom", 8, "intermediate"),
   r("sp-e1", "spec precision", "exercise", "Write a One-Page Spec for a Feature in 15 Minutes",    "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 15, "intermediate"),
 
   // ── scope negotiation ────────────────────────────────────────────────────────
   r("sn-v1", "scope negotiation", "video",    "Negotiating Scope Without Damaging Engineering Trust", "https://www.youtube.com/watch?v=ZgmKmkDuGVA", "Exponent", 20, "intermediate"),
   r("sn-v2", "scope negotiation", "video",    "Sprint Planning Best Practices for PMs",              "https://www.youtube.com/watch?v=zoMHbdJJdEA", "Atlassian", 18, "beginner"),
-  r("sn-a1", "scope negotiation", "article",  "The Art of the MVP Negotiation",                      "https://review.firstround.com/the-art-of-the-mvp", "First Round Review", 8, "intermediate"),
-  r("sn-a2", "scope negotiation", "article",  "How to Handle Mid-Sprint Escalations",                "https://www.mindtheproduct.com/mid-sprint-escalations/", "Mind the Product", 6, "beginner"),
+  r("sn-a1", "scope negotiation", "text",  "The Art of the MVP Negotiation",                      "https://review.firstround.com/the-art-of-the-mvp", "First Round Review", 8, "intermediate"),
+  r("sn-a2", "scope negotiation", "text",  "How to Handle Mid-Sprint Escalations",                "https://www.mindtheproduct.com/mid-sprint-escalations/", "Mind the Product", 6, "beginner"),
   r("sn-e1", "scope negotiation", "exercise", "Scope a Feature Down to an MVP in 10 Minutes",        "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── estimation challenge ─────────────────────────────────────────────────────
   r("ec-v1", "estimation challenge", "video",    "How PMs Challenge Engineering Estimates Constructively", "https://www.youtube.com/watch?v=nYg4jNJKAI8", "Exponent", 20, "intermediate"),
   r("ec-v2", "estimation challenge", "video",    "Story Points and Estimation Demystified",               "https://www.youtube.com/watch?v=zoMHbdJJdEA", "Atlassian", 15, "beginner"),
-  r("ec-a1", "estimation challenge", "article",  "Why Engineers Give Bad Estimates and What PMs Can Do",  "https://www.reforge.com/blog/engineering-estimates", "Reforge", 8, "intermediate"),
-  r("ec-a2", "estimation challenge", "article",  "Breaking Down Engineering Estimates as a PM",           "https://productschool.com/blog/product-management/engineering-estimates/", "Product School", 6, "beginner"),
+  r("ec-a1", "estimation challenge", "text",  "Why Engineers Give Bad Estimates and What PMs Can Do",  "https://www.reforge.com/blog/engineering-estimates", "Reforge", 8, "intermediate"),
+  r("ec-a2", "estimation challenge", "text",  "Breaking Down Engineering Estimates as a PM",           "https://productschool.com/blog/product-management/engineering-estimates/", "Product School", 6, "beginner"),
   r("ec-e1", "estimation challenge", "exercise", "Decompose a Feature Into Tasks and Spot the Unknowns", "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "intermediate"),
 
   // ── data quality instinct ────────────────────────────────────────────────────
   r("dq-v1", "data quality instinct", "video",    "Data Quality Issues PMs Miss",                       "https://www.youtube.com/watch?v=vhekbT7JWRM", "Amplitude", 20, "intermediate"),
   r("dq-v2", "data quality instinct", "video",    "How to Spot Metric Discrepancies Before They Bite You", "https://www.youtube.com/watch?v=FJLKIiB8mNc", "Reforge", 18, "advanced"),
-  r("dq-a1", "data quality instinct", "article",  "When Your Data Lies to You",                          "https://www.lennysnewsletter.com/p/when-your-data-lies", "Lenny's Newsletter", 8, "intermediate"),
-  r("dq-a2", "data quality instinct", "article",  "The PM's Guide to Metric Hygiene",                    "https://segment.com/blog/metric-hygiene/", "Segment", 7, "beginner"),
+  r("dq-a1", "data quality instinct", "text",  "When Your Data Lies to You",                          "https://www.lennysnewsletter.com/p/when-your-data-lies", "Lenny's Newsletter", 8, "intermediate"),
+  r("dq-a2", "data quality instinct", "text",  "The PM's Guide to Metric Hygiene",                    "https://segment.com/blog/metric-hygiene/", "Segment", 7, "beginner"),
   r("dq-e1", "data quality instinct", "exercise", "Debug a DAU/Revenue Discrepancy Scenario",            "https://www.tryexponent.com/practice/metrics", "Exponent Practice", 10, "intermediate"),
 
   // ── build vs buy ─────────────────────────────────────────────────────────────
   r("bb-v1", "build vs buy", "video",    "Build vs Buy: How PMs Should Think About It",        "https://www.youtube.com/watch?v=xoab4Dc4Pns", "Exponent", 22, "intermediate"),
   r("bb-v2", "build vs buy", "video",    "Platform Strategy: When to Own and When to Integrate", "https://www.youtube.com/watch?v=ByGJQzlzxQg", "a16z", 20, "advanced"),
-  r("bb-a1", "build vs buy", "article",  "Total Cost of Ownership for Product Decisions",       "https://www.reforge.com/blog/build-vs-buy-total-cost", "Reforge", 8, "intermediate"),
-  r("bb-a2", "build vs buy", "article",  "Make vs Buy: A Decision Framework for PMs",           "https://www.mindtheproduct.com/make-vs-buy-framework/", "Mind the Product", 7, "beginner"),
+  r("bb-a1", "build vs buy", "text",  "Total Cost of Ownership for Product Decisions",       "https://www.reforge.com/blog/build-vs-buy-total-cost", "Reforge", 8, "intermediate"),
+  r("bb-a2", "build vs buy", "text",  "Make vs Buy: A Decision Framework for PMs",           "https://www.mindtheproduct.com/make-vs-buy-framework/", "Mind the Product", 7, "beginner"),
   r("bb-e1", "build vs buy", "exercise", "Model a Build vs Buy Decision with Real Numbers",     "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 12, "intermediate"),
 
   // ── engineering partnership ──────────────────────────────────────────────────
   r("ep-v1", "engineering partnership", "video",    "The PM-Engineer Partnership: What Great Looks Like",    "https://www.youtube.com/watch?v=LelFUAsxXUI", "Lenny's Podcast", 25, "intermediate"),
   r("ep-v2", "engineering partnership", "video",    "How to Work With Engineering Teams as a PM",            "https://www.youtube.com/watch?v=nYg4jNJKAI8", "Exponent", 20, "beginner"),
-  r("ep-a1", "engineering partnership", "article",  "The Best PMs Aren't Technical — They're Collaborative", "https://review.firstround.com/the-anatomy-of-the-perfect-technical-pm-interview", "First Round Review", 7, "intermediate"),
-  r("ep-a2", "engineering partnership", "article",  "Technical Fluency for Non-Technical PMs",              "https://review.firstround.com/technical-fluency", "First Round Review", 8, "beginner"),
+  r("ep-a1", "engineering partnership", "text",  "The Best PMs Aren't Technical — They're Collaborative", "https://review.firstround.com/the-anatomy-of-the-perfect-technical-pm-interview", "First Round Review", 7, "intermediate"),
+  r("ep-a2", "engineering partnership", "text",  "Technical Fluency for Non-Technical PMs",              "https://review.firstround.com/technical-fluency", "First Round Review", 8, "beginner"),
   r("ep-e1", "engineering partnership", "exercise", "Shadow an Engineering Standup and Document Key Patterns", "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 15, "intermediate"),
 
   // ── conflict resolution ──────────────────────────────────────────────────────
   r("cr-v1", "conflict resolution", "video",    "Influence Without Authority: The PM Superpower",        "https://www.youtube.com/watch?v=V97Iy_XR0KA", "YouTube", 20, "intermediate"),
   r("cr-v2", "conflict resolution", "video",    "How to Handle Stakeholder Conflict as a PM",            "https://www.youtube.com/watch?v=d6o_I_4jQCg", "Product School", 18, "beginner"),
-  r("cr-a1", "conflict resolution", "article",  "Pre-Meeting Alignment: A PM Playbook",                  "https://www.lennysnewsletter.com/p/pre-meeting-alignment", "Lenny's Newsletter", 7, "intermediate"),
-  r("cr-a2", "conflict resolution", "article",  "The PM's Guide to Difficult Conversations",             "https://review.firstround.com/difficult-conversations", "First Round Review", 8, "advanced"),
+  r("cr-a1", "conflict resolution", "text",  "Pre-Meeting Alignment: A PM Playbook",                  "https://www.lennysnewsletter.com/p/pre-meeting-alignment", "Lenny's Newsletter", 7, "intermediate"),
+  r("cr-a2", "conflict resolution", "text",  "The PM's Guide to Difficult Conversations",             "https://review.firstround.com/difficult-conversations", "First Round Review", 8, "advanced"),
   r("cr-e1", "conflict resolution", "exercise", "Map Your Stakeholders and Their Likely Objections",     "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "intermediate"),
 
   // ── executive communication ──────────────────────────────────────────────────
   r("xc-v1", "executive communication", "video",    "How to Present to Executives as a PM",               "https://www.youtube.com/watch?v=a_SKJHLdEoA", "Exponent", 20, "intermediate"),
   r("xc-v2", "executive communication", "video",    "The CFO-Friendly Product Pitch",                     "https://www.youtube.com/watch?v=5O8L6_pRCZ4", "Reforge", 18, "advanced"),
-  r("xc-a1", "executive communication", "article",  "LTV and CAC: What Every PM Needs to Know",           "https://www.reforge.com/blog/unit-economics", "Reforge", 8, "intermediate"),
-  r("xc-a2", "executive communication", "article",  "Business Cases That Actually Get Approved",          "https://www.mindtheproduct.com/business-cases-that-get-approved/", "Mind the Product", 7, "intermediate"),
+  r("xc-a1", "executive communication", "text",  "LTV and CAC: What Every PM Needs to Know",           "https://www.reforge.com/blog/unit-economics", "Reforge", 8, "intermediate"),
+  r("xc-a2", "executive communication", "text",  "Business Cases That Actually Get Approved",          "https://www.mindtheproduct.com/business-cases-that-get-approved/", "Mind the Product", 7, "intermediate"),
   r("xc-e1", "executive communication", "exercise", "Write a One-Page Business Case for a Real Feature",  "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 15, "advanced"),
 
   // ── facilitation ─────────────────────────────────────────────────────────────
   r("fa-v1", "facilitation", "video",    "Facilitating Technical Decisions as a PM",               "https://www.youtube.com/watch?v=xoab4Dc4Pns", "Exponent", 20, "intermediate"),
   r("fa-v2", "facilitation", "video",    "How to Run Effective Product Review Meetings",            "https://www.youtube.com/watch?v=zoMHbdJJdEA", "Atlassian", 15, "beginner"),
-  r("fa-a1", "facilitation", "article",  "The Art of the Decision Meeting",                        "https://review.firstround.com/the-art-of-the-decision-meeting", "First Round Review", 8, "intermediate"),
-  r("fa-a2", "facilitation", "article",  "How to Break Technical Ties Without Choosing Sides",     "https://www.mindtheproduct.com/how-to-break-technical-ties/", "Mind the Product", 6, "intermediate"),
+  r("fa-a1", "facilitation", "text",  "The Art of the Decision Meeting",                        "https://review.firstround.com/the-art-of-the-decision-meeting", "First Round Review", 8, "intermediate"),
+  r("fa-a2", "facilitation", "text",  "How to Break Technical Ties Without Choosing Sides",     "https://www.mindtheproduct.com/how-to-break-technical-ties/", "Mind the Product", 6, "intermediate"),
   r("fa-e1", "facilitation", "exercise", "Facilitate a Mock Architecture Debate: 2 Engineers, 10 Min", "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 10, "beginner"),
 
   // ── business case framing ────────────────────────────────────────────────────
   r("bf-v1", "business case framing", "video",    "Building Business Cases for Product Investment",     "https://www.youtube.com/watch?v=5O8L6_pRCZ4", "Reforge", 22, "advanced"),
   r("bf-v2", "business case framing", "video",    "How PMs Frame Investment Decisions for Leadership",  "https://www.youtube.com/watch?v=a_SKJHLdEoA", "Exponent", 20, "intermediate"),
-  r("bf-a1", "business case framing", "article",  "Unit Economics Every PM Should Know",               "https://www.reforge.com/blog/unit-economics", "Reforge", 8, "intermediate"),
-  r("bf-a2", "business case framing", "article",  "The One-Page Business Case",                        "https://gibsonbiddle.medium.com/the-one-page-business-case", "Gibson Biddle", 7, "intermediate"),
+  r("bf-a1", "business case framing", "text",  "Unit Economics Every PM Should Know",               "https://www.reforge.com/blog/unit-economics", "Reforge", 8, "intermediate"),
+  r("bf-a2", "business case framing", "text",  "The One-Page Business Case",                        "https://gibsonbiddle.medium.com/the-one-page-business-case", "Gibson Biddle", 7, "intermediate"),
   r("bf-e1", "business case framing", "exercise", "Model the ROI of a Feature: Retention + Cost",     "https://www.tryexponent.com/practice/product-manager", "Exponent Practice", 15, "advanced"),
 ];
 
@@ -541,7 +505,7 @@ export function generateDailyPlan(
   profile:    ScoreProfile,
   duration:   GoalDuration,
   dayNumber:  number
-): DailyTask[] {
+): ContentDailyTask[] {
   const daysAvailable = GOAL_DAYS[duration];
   const maxPerDay     = MAX_PER_DAY[duration];
 
@@ -603,7 +567,7 @@ export function generateDailyPlan(
     resource,
     subcategory,
     status,
-    whyThis: WHY_THIS[subcategory],
+    whyThis: WHY_THIS[subcategory] ?? "",
   }));
 }
 
@@ -612,13 +576,13 @@ export function generateDailyPlan(
 export function generateWeeklyPlan(
   profile:  ScoreProfile,
   duration: GoalDuration
-): WeekPlan[] {
+): ContentWeekPlan[] {
   const daysTotal = GOAL_DAYS[duration];
   const weekCount = Math.ceil(daysTotal / 7);
-  const plans: WeekPlan[] = [];
+  const plans: ContentWeekPlan[] = [];
 
   for (let w = 0; w < weekCount; w++) {
-    const days: { dayNumber: number; tasks: DailyTask[] }[] = [];
+    const days: { dayNumber: number; tasks: ContentDailyTask[] }[] = [];
     const subcatCount: Partial<Record<Subcategory, number>> = {};
 
     for (let d = 1; d <= 7; d++) {
@@ -658,44 +622,44 @@ export const roadmapContent: Record<ArchetypeKey, RoadmapContent> = {
   builder: {
     archetype: "builder",
     weeks: [
-      { week: 1, theme: "Strategic Narrative", objectives: ["Frame technical decisions in business terms", "Write a one-page product strategy doc for a product you use daily"], resources: [{ type: "article", title: "Shreyas Doshi on Thinking in Bets vs Thinking in Outcomes", url: "https://twitter.com/shreyas/status/1370824336745197568" }, { type: "video", title: "Good Strategy Bad Strategy — Summary", url: "https://www.youtube.com/watch?v=Pj0cME8Drpc" }] },
-      { week: 2, theme: "Stakeholder Communication", objectives: ["Write a crisp 1-page memo (Amazon-style) for a technical initiative", "Present a build vs buy decision to a non-technical audience"], resources: [{ type: "article", title: "Amazon's 6-Pager Memo Format Explained", url: "https://www.productplan.com/glossary/amazon-6-pager/" }] },
+      { week: 1, theme: "Strategic Narrative", objectives: ["Frame technical decisions in business terms", "Write a one-page product strategy doc for a product you use daily"], resources: [{ type: "text", title: "Shreyas Doshi on Thinking in Bets vs Thinking in Outcomes", url: "https://twitter.com/shreyas/status/1370824336745197568" }, { type: "video", title: "Good Strategy Bad Strategy — Summary", url: "https://www.youtube.com/watch?v=Pj0cME8Drpc" }] },
+      { week: 2, theme: "Stakeholder Communication", objectives: ["Write a crisp 1-page memo (Amazon-style) for a technical initiative", "Present a build vs buy decision to a non-technical audience"], resources: [{ type: "text", title: "Amazon's 6-Pager Memo Format Explained", url: "https://www.productplan.com/glossary/amazon-6-pager/" }] },
       { week: 3, theme: "Product Sense", objectives: ["Run 5 user interviews using the Jobs-to-be-Done framework", "Complete a PM interview teardown for a product you want to work on"], resources: [{ type: "video", title: "JTBD Interviews with Bob Moesta", url: "https://www.youtube.com/watch?v=sfGtd2UXidU" }] },
-      { week: 4, theme: "PM Interview Prep", objectives: ["Complete 10 mock product design questions", "Record a 5-minute walkthrough of a product you'd improve"], resources: [{ type: "article", title: "Exponent PM Interview Question Bank", url: "https://www.tryexponent.com/practice/product-manager" }] },
+      { week: 4, theme: "PM Interview Prep", objectives: ["Complete 10 mock product design questions", "Record a 5-minute walkthrough of a product you'd improve"], resources: [{ type: "text", title: "Exponent PM Interview Question Bank", url: "https://www.tryexponent.com/practice/product-manager" }] },
     ],
   },
   strategist: {
     archetype: "strategist",
     weeks: [
-      { week: 1, theme: "From Strategy to Spec", objectives: ["Write a full PRD for a feature you'd add to Swiggy or CRED", "Include success metrics, edge cases, and rollout plan"], resources: [{ type: "article", title: "How to Write a Great PRD — Gibson Biddle", url: "https://gibsonbiddle.medium.com/how-to-write-a-good-prd-product-requirements-document-6b07c15c1d8f" }] },
+      { week: 1, theme: "From Strategy to Spec", objectives: ["Write a full PRD for a feature you'd add to Swiggy or CRED", "Include success metrics, edge cases, and rollout plan"], resources: [{ type: "text", title: "How to Write a Great PRD — Gibson Biddle", url: "https://gibsonbiddle.medium.com/how-to-write-a-good-prd-product-requirements-document-6b07c15c1d8f" }] },
       { week: 2, theme: "Technical Fluency", objectives: ["Learn the basics of API design and when to use REST vs GraphQL", "Shadow an engineering standup and write a summary"], resources: [{ type: "video", title: "APIs for Non-Engineers", url: "https://www.youtube.com/watch?v=ByGJQzlzxQg" }] },
-      { week: 3, theme: "Metric Mastery", objectives: ["Define a North Star metric for 3 different product types", "Build a simple cohort analysis in a spreadsheet"], resources: [{ type: "article", title: "Lenny's North Star Metric Framework", url: "https://www.lennysnewsletter.com/p/north-star-metric" }] },
+      { week: 3, theme: "Metric Mastery", objectives: ["Define a North Star metric for 3 different product types", "Build a simple cohort analysis in a spreadsheet"], resources: [{ type: "text", title: "Lenny's North Star Metric Framework", url: "https://www.lennysnewsletter.com/p/north-star-metric" }] },
       { week: 4, theme: "PM Interview Prep", objectives: ["Practice estimation questions (DAU to revenue)", "Complete a full mock strategy case"], resources: [{ type: "video", title: "How to Answer PM Strategy Questions", url: "https://www.youtube.com/watch?v=0bF7oX39N4A" }] },
     ],
   },
   advocate: {
     archetype: "advocate",
     weeks: [
-      { week: 1, theme: "Business Case Building", objectives: ["Learn to model LTV and CAC for a consumer product", "Write a business case for a feature you'd add to a product you love"], resources: [{ type: "article", title: "Unit Economics for PMs — Reforge", url: "https://www.reforge.com/blog/unit-economics" }] },
+      { week: 1, theme: "Business Case Building", objectives: ["Learn to model LTV and CAC for a consumer product", "Write a business case for a feature you'd add to a product you love"], resources: [{ type: "text", title: "Unit Economics for PMs — Reforge", url: "https://www.reforge.com/blog/unit-economics" }] },
       { week: 2, theme: "Data-Driven Product Thinking", objectives: ["Learn funnel analysis — map the drop-off points in an app you use", "Write a hypothesis and define what would prove/disprove it"], resources: [{ type: "video", title: "Product Analytics Deep Dive — Mixpanel", url: "https://www.youtube.com/watch?v=vhekbT7JWRM" }] },
-      { week: 3, theme: "Roadmap Prioritisation", objectives: ["Build a prioritisation matrix for 10 features using RICE scoring", "Write a 1-page roadmap brief for a 6-month horizon"], resources: [{ type: "article", title: "RICE Scoring Model Explained", url: "https://www.productplan.com/glossary/rice-scoring-model/" }] },
-      { week: 4, theme: "PM Interview Prep", objectives: ["Complete 5 product design and 5 metrics mock questions", "Prepare your 'why PM from design' narrative"], resources: [{ type: "article", title: "From Designer to PM — Jackie Bavaro", url: "https://www.producthunt.com/stories/from-designer-to-product-manager" }] },
+      { week: 3, theme: "Roadmap Prioritisation", objectives: ["Build a prioritisation matrix for 10 features using RICE scoring", "Write a 1-page roadmap brief for a 6-month horizon"], resources: [{ type: "text", title: "RICE Scoring Model Explained", url: "https://www.productplan.com/glossary/rice-scoring-model/" }] },
+      { week: 4, theme: "PM Interview Prep", objectives: ["Complete 5 product design and 5 metrics mock questions", "Prepare your 'why PM from design' narrative"], resources: [{ type: "text", title: "From Designer to PM — Jackie Bavaro", url: "https://www.producthunt.com/stories/from-designer-to-product-manager" }] },
     ],
   },
   operator: {
     archetype: "operator",
     weeks: [
-      { week: 1, theme: "Product Vision", objectives: ["Write a 3-year product vision for a product in your target domain", "Map the competitive landscape and identify your differentiation"], resources: [{ type: "article", title: "How to Write a Compelling Product Vision", url: "https://www.svpg.com/the-product-vision/" }] },
+      { week: 1, theme: "Product Vision", objectives: ["Write a 3-year product vision for a product in your target domain", "Map the competitive landscape and identify your differentiation"], resources: [{ type: "text", title: "How to Write a Compelling Product Vision", url: "https://www.svpg.com/the-product-vision/" }] },
       { week: 2, theme: "User Empathy", objectives: ["Run 5 user interviews using contextual inquiry", "Build a journey map for a product you want to PM"], resources: [{ type: "video", title: "User Interview Masterclass", url: "https://www.youtube.com/watch?v=Qq3OiHQ-HCU" }] },
-      { week: 3, theme: "Technical Depth", objectives: ["Read about database design basics and explain CAP theorem in plain English", "Write a technical spec for a simple API"], resources: [{ type: "article", title: "System Design for PMs", url: "https://medium.com/geekculture/system-design-for-product-managers-6f8b6c9c0e7f" }] },
+      { week: 3, theme: "Technical Depth", objectives: ["Read about database design basics and explain CAP theorem in plain English", "Write a technical spec for a simple API"], resources: [{ type: "text", title: "System Design for PMs", url: "https://medium.com/geekculture/system-design-for-product-managers-6f8b6c9c0e7f" }] },
       { week: 4, theme: "PM Interview Prep", objectives: ["Practice 5 execution and 5 estimation mock questions", "Prepare your operations-to-PM transition story"], resources: [{ type: "video", title: "PM Execution Interview Framework", url: "https://www.youtube.com/watch?v=9BLh_q77CRk" }] },
     ],
   },
   explorer: {
     archetype: "explorer",
     weeks: [
-      { week: 1, theme: "Execution Rigour", objectives: ["Write a launch checklist for a product you'd build", "Define a go-to-market plan for a new feature"], resources: [{ type: "article", title: "Product Launch Checklist — Lenny Rachitsky", url: "https://www.lennysnewsletter.com/p/product-launch" }] },
-      { week: 2, theme: "Metrics & Accountability", objectives: ["Build a dashboard spec for a product you'd launch", "Write a post-mortem for a launch that 'failed'"], resources: [{ type: "article", title: "Writing Good Post-Mortems", url: "https://sre.google/sre-book/postmortem-culture/" }] },
+      { week: 1, theme: "Execution Rigour", objectives: ["Write a launch checklist for a product you'd build", "Define a go-to-market plan for a new feature"], resources: [{ type: "text", title: "Product Launch Checklist — Lenny Rachitsky", url: "https://www.lennysnewsletter.com/p/product-launch" }] },
+      { week: 2, theme: "Metrics & Accountability", objectives: ["Build a dashboard spec for a product you'd launch", "Write a post-mortem for a launch that 'failed'"], resources: [{ type: "text", title: "Writing Good Post-Mortems", url: "https://sre.google/sre-book/postmortem-culture/" }] },
       { week: 3, theme: "Stakeholder Alignment", objectives: ["Draft a roadmap presentation for a sceptical executive", "Practice pushback scenarios with a mock engineering lead"], resources: [{ type: "video", title: "How to Influence Without Authority", url: "https://www.youtube.com/watch?v=V97Iy_XR0KA" }] },
       { week: 4, theme: "PM Interview Prep", objectives: ["Practice 5 product strategy and 5 product design mock questions", "Prepare a 0→1 case study from your career"], resources: [{ type: "video", title: "0-to-1 PM Interview Questions", url: "https://www.youtube.com/watch?v=qDVNEBZN5Ow" }] },
     ],
