@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { MapPin } from "lucide-react";
 import type { AssessmentDimension } from "@/types";
 import { DIMENSION_LABELS } from "@/lib/scoring";
 
@@ -28,7 +29,12 @@ export default function DimensionTransition({
       exit={{ opacity: 0, scale: 0.96 }}
       className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 px-4"
     >
-      <div className="text-5xl">📍</div>
+      <div
+        className="flex items-center justify-center w-20 h-20 rounded-2xl text-[#8B8FFF]"
+        style={{ background: "rgba(107,91,255,0.12)", border: "1px solid rgba(107,91,255,0.2)" }}
+      >
+        <MapPin size={40} strokeWidth={1.5} />
+      </div>
       <div>
         <p className="text-white/40 text-sm font-outfit mb-2">Next dimension</p>
         <h2 className="text-2xl font-bold text-white font-outfit">

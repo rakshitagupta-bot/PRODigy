@@ -1,10 +1,15 @@
+import { Play, FileText, PenLine, ArrowRight } from "lucide-react";
 import type { RoadmapWeek } from "@/types";
 
 interface RoadmapDirectionProps {
   week: RoadmapWeek;
 }
 
-const resourceIcons = { video: "▶️", text: "📄", exercise: "✏️" };
+const resourceIcons = {
+  video:    <Play size={12} strokeWidth={2} className="text-[#8B8FFF] flex-shrink-0 mt-0.5" />,
+  text:     <FileText size={12} strokeWidth={2} className="text-[#8B8FFF] flex-shrink-0 mt-0.5" />,
+  exercise: <PenLine size={12} strokeWidth={2} className="text-[#8B8FFF] flex-shrink-0 mt-0.5" />,
+};
 
 export default function RoadmapDirection({ week }: RoadmapDirectionProps) {
   return (
@@ -19,7 +24,7 @@ export default function RoadmapDirection({ week }: RoadmapDirectionProps) {
       <ul className="space-y-1.5 pl-11">
         {week.objectives.map((obj, i) => (
           <li key={i} className="flex items-start gap-2 text-sm text-white/65 font-outfit">
-            <span className="text-[#6B5BFF] mt-0.5 flex-shrink-0">→</span>
+            <ArrowRight size={13} strokeWidth={2} className="text-[#6B5BFF] mt-0.5 flex-shrink-0" />
             {obj}
           </li>
         ))}
@@ -34,7 +39,7 @@ export default function RoadmapDirection({ week }: RoadmapDirectionProps) {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 transition-colors"
           >
-            <span>{resourceIcons[r.type]}</span>
+            {resourceIcons[r.type]}
             <span className="underline underline-offset-2">{r.title}</span>
           </a>
         ))}

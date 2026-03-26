@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { FileText, Play, PenLine, Sparkles, Flame, BarChart2, Map, LayoutDashboard } from "lucide-react";
+import { FileText, Play, PenLine, Sparkles, Flame, BarChart2, Map, LayoutDashboard, PartyPopper } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ScoreProfile } from "@/lib/scoring";
 import { DIMENSION_COLORS, DIMENSION_LABELS } from "@/lib/scoring";
@@ -488,7 +488,11 @@ export default function RoadmapPage() {
                     border:      "1px solid rgba(255,255,255,0.06)",
                   }}
                 >
-                  <p className="text-2xl mb-2">🎉</p>
+                  <div className="flex justify-center mb-3">
+                    <span className="flex items-center justify-center w-12 h-12 rounded-2xl text-[#8B8FFF]" style={{ background: "rgba(107,91,255,0.12)", border: "1px solid rgba(107,91,255,0.2)" }}>
+                      <PartyPopper size={24} strokeWidth={1.5} />
+                    </span>
+                  </div>
                   <p className="text-sm font-semibold text-white font-outfit">
                     Plan complete!
                   </p>
