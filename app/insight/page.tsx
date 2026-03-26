@@ -236,7 +236,7 @@ export default function InsightPage() {
         <FadeUp delay={0.55}>
           <div className="space-y-3 pt-2">
             <button
-              onClick={() => router.push("/payment")}
+              onClick={() => router.push("/your-results")}
               className="relative w-full flex items-center justify-center gap-2 font-outfit font-semibold rounded-xl text-white px-8 py-4 text-base overflow-hidden transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
               style={{
                 background:
