@@ -37,5 +37,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/signup?error=session_failed`);
   }
 
-  return NextResponse.redirect(`${origin}/assessment`);
+  return NextResponse.redirect(`${origin}/insight`);
 }

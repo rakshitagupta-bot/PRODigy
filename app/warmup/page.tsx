@@ -133,7 +133,7 @@ export default function WarmupPage() {
             );
         }
 
-        router.push("/insight");
+        router.push("/signup");
       }
     }, 350);
   }

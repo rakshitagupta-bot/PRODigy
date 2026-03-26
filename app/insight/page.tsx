@@ -269,7 +269,7 @@ export default function InsightPage() {
         <FadeUp delay={0.55}>
           <div className="space-y-3 pt-2">
             <button
-              onClick={() => router.push(isSignedIn ? "/assessment" : "/signup")}
+              onClick={() => router.push("/payment")}
               className="relative w-full flex items-center justify-center gap-2 font-outfit font-semibold rounded-xl text-white px-8 py-4 text-base overflow-hidden transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
               style={{
                 background:
@@ -280,7 +280,7 @@ export default function InsightPage() {
                   "0 0 24px rgba(74,108,247,0.35), 0 0 48px rgba(107,91,255,0.15)",
               }}
             >
-              {isSignedIn ? "Start full diagnostic →" : "Sign in to continue →"}
+              Unlock full diagnostic →
             </button>
             <p className="text-center text-xs text-white/25 font-outfit">
               22 questions · ~12 minutes · free

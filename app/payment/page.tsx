@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
-const PRICE_INR              = 499;
-const RAZORPAY_PAYMENT_PAGE  = "https://pages.razorpay.com/pl_SVWThlSVdvfNur/view";
+const PRICE_INR = 499;
 
 // ─── What's included ──────────────────────────────────────────────────────────
 
@@ -69,11 +68,7 @@ function FadeUp({
 
 export default function PaymentPage() {
   const router = useRouter();
-  const [background, setBackground]   = useState<string>("");
-  const [txnId, setTxnId]           = useState("");
-  const [showVerify, setShowVerify] = useState(false);
-  const [confirming, setConfirming] = useState(false);
-  const [error, setError]             = useState("");
+  const [background, setBackground] = useState<string>("");
 
   useEffect(() => {
     const raw = localStorage.getItem("prodigy_warmup");
@@ -101,18 +96,6 @@ export default function PaymentPage() {
   };
 
   const displayBg = bgLabel[background] ?? "your background";
-
-  function handleConfirmPayment() {
-    if (!txnId.trim()) {
-      setError("Please enter your Razorpay payment ID to continue.");
-      return;
-    }
-    setConfirming(true);
-    // Store paid flag + transaction ID for your records
-    localStorage.setItem("prodigy_paid", "true");
-    localStorage.setItem("prodigy_txn",  txnId.trim());
-    setTimeout(() => router.push("/results"), 800);
-  }
 
   return (
     <main className="min-h-screen bg-[#0B0E1A] pb-20">
@@ -608,12 +591,9 @@ export default function PaymentPage() {
                 ))}
               </ul>
 
-              {/* Pay button → Razorpay page, then verify */}
-              <a
-                href={RAZORPAY_PAYMENT_PAGE}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setTimeout(() => setShowVerify(true), 800)}
+              {/* Pay button */}
+              <button
+                onClick={() => router.push("/assessment")}
                 className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-outfit font-bold text-base text-white transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
                 style={{
                   background: "linear-gradient(135deg, #4A6CF7 0%, #6B5BFF 50%, #8B5CF6 100%)",
@@ -624,59 +604,7 @@ export default function PaymentPage() {
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-              </a>
-
-              {/* Verification — shown after clicking pay */}
-              <AnimatePresence>
-                {showVerify && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="space-y-3"
-                  >
-                    <div
-                      className="rounded-xl px-4 py-3 flex items-start gap-2.5"
-                      style={{ background: "rgba(107,91,255,0.08)", border: "1px solid rgba(107,91,255,0.2)" }}
-                    >
-                      <span className="text-base flex-shrink-0 mt-0.5">✅</span>
-                      <p className="text-xs text-white/60 font-outfit leading-relaxed">
-                        Paid? Copy your <strong className="text-white/80">Razorpay Payment ID</strong> (starts with{" "}
-                        <code className="text-[#a5b4fc]">pay_</code>) from the confirmation screen and paste it below.
-                      </p>
-                    </div>
-
-                    <input
-                      type="text"
-                      value={txnId}
-                      onChange={(e) => { setTxnId(e.target.value); setError(""); }}
-                      placeholder="e.g. pay_XXXXXXXXXXXXXXXXX"
-                      className="w-full px-4 py-3 rounded-xl text-sm font-outfit text-white placeholder-white/25 outline-none transition-all"
-                      style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: error ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.1)",
-                      }}
-                    />
-                    {error && <p className="text-xs text-[#f87171] font-outfit">{error}</p>}
-
-                    <button
-                      onClick={handleConfirmPayment}
-                      disabled={confirming}
-                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-outfit font-semibold text-sm text-white transition-all hover:opacity-90 active:scale-[0.99] disabled:opacity-60"
-                      style={{
-                        background: "rgba(107,91,255,0.25)",
-                        border: "1px solid rgba(107,91,255,0.4)",
-                      }}
-                    >
-                      {confirming ? (
-                        <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                      ) : (
-                        <>Confirm payment · Start assessment →</>
-                      )}
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              </button>
 
               {/* Trust row */}
               <div className="flex items-center justify-center gap-5 flex-wrap">

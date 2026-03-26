@@ -57,7 +57,7 @@ function SignupContent() {
   useEffect(() => {
     getSupabase().auth.getSession().then(({ data }) => {
       if (!data.session) return;
-      router.replace("/assessment");
+      router.replace("/insight");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
