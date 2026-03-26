@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { FileText, Play, PenLine, Sparkles, Flame, BarChart2, Map, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ScoreProfile } from "@/lib/scoring";
 import { DIMENSION_COLORS, DIMENSION_LABELS } from "@/lib/scoring";
@@ -22,11 +23,11 @@ const GOAL_OPTIONS: { days: GoalDays; label: string; sub: string }[] = [
   { days: 180, label: "6 months", sub: "Deep mastery — interview-ready" },
 ];
 
-const TASK_ICONS: Record<DayTask["taskType"], string> = {
-  article:  "📄",
-  video:    "▶️",
-  exercise: "✏️",
-  reflect:  "🪞",
+const TASK_ICONS: Record<DayTask["taskType"], React.ReactNode> = {
+  article:  <FileText size={14} strokeWidth={1.8} />,
+  video:    <Play size={14} strokeWidth={1.8} />,
+  exercise: <PenLine size={14} strokeWidth={1.8} />,
+  reflect:  <Sparkles size={14} strokeWidth={1.8} />,
 };
 
 const TASK_LABELS: Record<DayTask["taskType"], string> = {
@@ -43,37 +44,9 @@ function BottomNav() {
   const pathname = usePathname();
 
   const links = [
-    {
-      label: "Report",
-      href:  "/report",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <rect x="3" y="3" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4" />
-          <rect x="10" y="3" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4" />
-          <rect x="3" y="10" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4" />
-          <rect x="10" y="10" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4" />
-        </svg>
-      ),
-    },
-    {
-      label: "Roadmap",
-      href:  "/roadmap",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M3 9h12M9 3l6 6-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ),
-    },
-    {
-      label: "Dashboard",
-      href:  "/dashboard",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.4" />
-          <path d="M9 6v3l2 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        </svg>
-      ),
-    },
+    { label: "Report",    href: "/report",    icon: <BarChart2 size={20} strokeWidth={1.6} /> },
+    { label: "Roadmap",   href: "/roadmap",   icon: <Map size={20} strokeWidth={1.6} /> },
+    { label: "Dashboard", href: "/dashboard", icon: <LayoutDashboard size={20} strokeWidth={1.6} /> },
   ];
 
   return (
@@ -441,7 +414,7 @@ export default function RoadmapPage() {
                   border:      "1px solid rgba(107,91,255,0.25)",
                 }}
               >
-                <span className="text-base">🔥</span>
+                <Flame size={16} className="text-[#f97316]" strokeWidth={1.8} />
                 <div>
                   <p className="text-xs font-bold text-white font-outfit leading-none">
                     {streak} day{streak !== 1 ? "s" : ""}

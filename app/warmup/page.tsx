@@ -61,7 +61,6 @@ const questions = [
   },
 ];
 
-const TOTAL_STEPS = 25;
 
 // ─── Slide animation ───────────────────────────────────────────────────────────
 
@@ -138,7 +137,7 @@ export default function WarmupPage() {
     }, 350);
   }
 
-  const progressPct = ((current.step) / TOTAL_STEPS) * 100;
+  // progressPct reserved for main assessment only
 
   return (
     <main className="min-h-screen bg-[#0B0E1A] flex flex-col">
@@ -152,26 +151,10 @@ export default function WarmupPage() {
       />
 
       {/* Top bar */}
-      <header className="relative z-10 w-full max-w-[600px] mx-auto px-5 pt-8 pb-0 space-y-3">
-        {/* Step counter */}
+      <header className="relative z-10 w-full max-w-[600px] mx-auto px-5 pt-8 pb-0">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-white/35 font-outfit">
-            {current.step} of {TOTAL_STEPS}
-          </span>
-          <span className="text-xs text-white/25 font-outfit">Warm-up</span>
-        </div>
-
-        {/* Progress bar */}
-        <div className="h-1 rounded-full bg-white/[0.06] overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{
-              background: "linear-gradient(90deg, #4A6CF7, #8B5CF6)",
-            }}
-            initial={false}
-            animate={{ width: `${progressPct}%` }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          />
+          <span className="text-xs text-white/35 font-outfit">Warm-up</span>
+          <span className="text-xs text-white/25 font-outfit">{current.step} of {questions.length}</span>
         </div>
       </header>
 

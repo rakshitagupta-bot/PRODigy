@@ -92,7 +92,6 @@ export default function BadgeCard({
         );
 
   const isAlmostEarned = !badge.isEarned && progress > 75;
-  const isLocked = !badge.isEarned && !isAlmostEarned;
 
   // Format earned date
   const earnedDateLabel = badge.earnedAt

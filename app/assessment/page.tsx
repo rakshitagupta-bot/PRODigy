@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase";
+import { Lightbulb, Zap, Wrench, Megaphone, Sparkles } from "lucide-react";
 
 import { questions } from "@/lib/questions";
 import { selfRatings } from "@/lib/self-ratings";
@@ -26,36 +27,36 @@ interface TransitionData {
   heading: string;
   subheading: string;
   body: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 const TRANSITIONS: Record<number, TransitionData> = {
   4: {
-    icon: "💡",
+    icon: <Lightbulb size={40} strokeWidth={1.5} />,
     heading: "Product Intuition",
     subheading: "User Research · Q5–Q7",
     body: "Now let's test how well you understand what users actually need — versus what they say they want. Product sense is the hardest dimension to fake.",
   },
   7: {
-    icon: "⚡",
+    icon: <Zap size={40} strokeWidth={1.5} />,
     heading: "Execution Depth",
     subheading: "Execution · Q8–Q11",
     body: "Shipping is where most PM candidates get separated from the field. These questions test how you handle the messiness between 'idea approved' and 'live in production.'",
   },
   11: {
-    icon: "🔧",
+    icon: <Wrench size={40} strokeWidth={1.5} />,
     heading: "Technical Fluency",
     subheading: "Technical Fluency · Q12–Q14",
     body: "You don't need to write code. But great PMs can think alongside engineers, challenge estimates, and smell a bad architectural decision. Let's see where you stand.",
   },
   14: {
-    icon: "📢",
+    icon: <Megaphone size={40} strokeWidth={1.5} />,
     heading: "Communication & Influence",
     subheading: "Communication · Q15–Q17",
     body: "Final scenario dimension. These questions test how you align, convince, and lead without authority — the skill that separates PMs who ship from PMs who get things done.",
   },
   17: {
-    icon: "🪞",
+    icon: <Sparkles size={40} strokeWidth={1.5} />,
     heading: "Almost there.",
     subheading: "Self-Assessment · SR1–SR5",
     body: "Five quick statements about how you see your own strengths. There are no right answers — honesty calibrates your score. Takes about 2 minutes.",
@@ -92,6 +93,14 @@ function AssessmentContent() {
     if (!supabaseRef.current) supabaseRef.current = createClient();
     return supabaseRef.current;
   }
+
+  // Guard: require payment before accessing assessment
+  useEffect(() => {
+    if (!localStorage.getItem("prodigy_paid")) {
+      router.replace("/payment");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Claim pre-signup session — links anonymous warmup data to the signed-in user
   useEffect(() => {
@@ -175,7 +184,7 @@ function AssessmentContent() {
         overall: String(profile.overallReadiness),
         archetype: profile.archetype,
       });
-      router.push(`/payment?${urlParams.toString()}`);
+      router.push(`/results?${urlParams.toString()}`);
     },
     [bg, exp, industry, router]
   );
@@ -300,7 +309,12 @@ function AssessmentContent() {
               exit="exit"
               className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6"
             >
-              <div className="text-5xl">{transition.icon}</div>
+              <div
+                className="flex items-center justify-center w-20 h-20 rounded-2xl text-[#8B8FFF]"
+                style={{ background: "rgba(107,91,255,0.12)", border: "1px solid rgba(107,91,255,0.2)" }}
+              >
+                {transition.icon}
+              </div>
               <div className="space-y-2">
                 <p className="text-xs text-white/35 font-outfit uppercase tracking-widest">
                   {transition.subheading}

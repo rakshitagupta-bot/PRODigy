@@ -44,6 +44,9 @@ function SignupContent() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingEmail, setExistingEmail] = useState<string | null>(null);
+  const [existingAvatar, setExistingAvatar] = useState<string | null>(null);
+  const [continuing, setContinuing] = useState(false);
 
   // Show OAuth error if redirected back with ?error=
   useEffect(() => {
@@ -53,14 +56,26 @@ function SignupContent() {
     if (err === "session_failed") setError("Something went wrong. Please try again.");
   }, []);
 
-  // If already signed in: go to /insight if warmup exists, else /report
+  // If already signed in: show "continue as" state instead of silently redirecting
   useEffect(() => {
     getSupabase().auth.getSession().then(({ data }) => {
       if (!data.session) return;
-      router.replace("/insight");
+      setExistingEmail(data.session.user.email ?? null);
+      setExistingAvatar(data.session.user.user_metadata?.avatar_url ?? null);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, []);
+
+  function handleContinue() {
+    setContinuing(true);
+    router.replace("/insight");
+  }
+
+  async function handleSwitchAccount() {
+    await getSupabase().auth.signOut();
+    setExistingEmail(null);
+    setExistingAvatar(null);
+  }
 
   async function handleGoogleSignIn() {
     setLoading(true);
@@ -143,25 +158,79 @@ function SignupContent() {
             </div>
           )}
 
-          {/* Google button */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-outfit font-semibold text-sm text-white border transition-all duration-200 hover:border-white/20 hover:bg-white/[0.06] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              borderColor: "rgba(255,255,255,0.12)",
-            }}
-          >
-            {loading ? (
-              <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
-            <span>
-              {loading ? "Redirecting to Google…" : "Continue with Google"}
-            </span>
-          </button>
+          {existingEmail ? (
+            /* ── Already signed in — show "Continue as" ── */
+            <div className="space-y-3">
+              {/* Existing account pill */}
+              <div
+                className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                style={{
+                  background: "rgba(107,91,255,0.08)",
+                  border: "1px solid rgba(107,91,255,0.25)",
+                }}
+              >
+                {existingAvatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={existingAvatar}
+                    alt=""
+                    className="w-8 h-8 rounded-full flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-[#6B5BFF]/30 flex items-center justify-center flex-shrink-0 text-xs font-bold text-[#8B8FFF] font-outfit">
+                    {existingEmail[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-xs text-white/40 font-outfit">Signed in as</p>
+                  <p className="text-sm text-white/90 font-outfit font-medium truncate">{existingEmail}</p>
+                </div>
+              </div>
+
+              {/* Continue button */}
+              <button
+                onClick={handleContinue}
+                disabled={continuing}
+                className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-outfit font-semibold text-sm text-white transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{
+                  background: "linear-gradient(135deg, #4A6CF7, #7B5CFF)",
+                }}
+              >
+                {continuing ? (
+                  <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                ) : null}
+                <span>{continuing ? "Loading your results…" : "Continue to my results →"}</span>
+              </button>
+
+              {/* Switch account */}
+              <button
+                onClick={handleSwitchAccount}
+                className="w-full text-xs text-white/30 font-outfit py-1 hover:text-white/50 transition-colors"
+              >
+                Not you? Sign in with a different account
+              </button>
+            </div>
+          ) : (
+            /* ── Not signed in — show Google OAuth ── */
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl font-outfit font-semibold text-sm text-white border transition-all duration-200 hover:border-white/20 hover:bg-white/[0.06] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                borderColor: "rgba(255,255,255,0.12)",
+              }}
+            >
+              {loading ? (
+                <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+              ) : (
+                <GoogleIcon />
+              )}
+              <span>
+                {loading ? "Redirecting to Google…" : "Continue with Google"}
+              </span>
+            </button>
+          )}
 
           {/* No-BS checklist */}
           <div className="space-y-2.5 pt-1">

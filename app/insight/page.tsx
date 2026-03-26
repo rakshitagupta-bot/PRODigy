@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Clock, MapPin, Check, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase";
 import {
   getInsight,
   getExperienceFrame,
@@ -38,19 +37,11 @@ function FadeUp({
 
 export default function InsightPage() {
   const router = useRouter();
-  const supabaseRef = useRef<SupabaseClient | null>(null);
-  function getSupabase(): SupabaseClient {
-    if (!supabaseRef.current) supabaseRef.current = createClient();
-    return supabaseRef.current;
-  }
-
   const [warmup, setWarmup] = useState<{
     background: string;
     experience: string;
     industry: string;
   } | null>(null);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-
   // Read warmup answers saved by the warmup page
   useEffect(() => {
     const raw = localStorage.getItem("prodigy_warmup");
@@ -64,14 +55,6 @@ export default function InsightPage() {
       router.replace("/warmup");
     }
   }, [router]);
-
-  // Check if already signed in
-  useEffect(() => {
-    getSupabase().auth.getSession().then(({ data }) => {
-      setIsSignedIn(!!data.session);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!warmup) {
     return (
@@ -98,22 +81,6 @@ export default function InsightPage() {
         }}
       />
 
-      {/* Top bar */}
-      <header className="relative z-10 w-full max-w-[600px] mx-auto px-5 pt-8 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-white/35 font-outfit">Early insight</span>
-          <span className="text-xs text-white/20 font-outfit">4 of 26</span>
-        </div>
-        <div className="h-1 rounded-full bg-white/[0.06] overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: "linear-gradient(90deg, #4A6CF7, #8B5CF6)" }}
-            initial={{ width: "12%" }}
-            animate={{ width: "15%" }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          />
-        </div>
-      </header>
 
       {/* Content */}
       <div className="relative z-10 flex-1 w-full max-w-[600px] mx-auto px-5 py-10 space-y-6">
@@ -183,7 +150,7 @@ export default function InsightPage() {
               borderColor: "rgba(255,255,255,0.06)",
             }}
           >
-            <span className="text-base mt-0.5 flex-shrink-0">🕐</span>
+            <Clock size={16} strokeWidth={1.8} className="text-white/35 mt-0.5 flex-shrink-0" />
             <p className="text-sm text-white/55 font-outfit leading-relaxed">
               {experienceFrame}
             </p>
@@ -211,7 +178,7 @@ export default function InsightPage() {
                         key={s}
                         className="text-xs text-white/60 font-outfit flex items-center gap-1.5"
                       >
-                        <span className="text-[#4ade80]">✓</span>
+                        <Check size={11} strokeWidth={2.5} className="text-[#4ade80] flex-shrink-0" />
                         <span className="capitalize">{s.replace(/-/g, " ")}</span>
                       </li>
                     ))}
@@ -235,7 +202,7 @@ export default function InsightPage() {
                         key={g}
                         className="text-xs text-white/60 font-outfit flex items-center gap-1.5"
                       >
-                        <span className="text-[#f87171]">→</span>
+                        <ArrowRight size={11} strokeWidth={2.5} className="text-[#f87171] flex-shrink-0" />
                         <span className="capitalize">{g.replace(/-/g, " ")}</span>
                       </li>
                     ))}
@@ -255,7 +222,7 @@ export default function InsightPage() {
               borderColor: "rgba(255,255,255,0.06)",
             }}
           >
-            <span className="text-base mt-0.5 flex-shrink-0">📍</span>
+            <MapPin size={16} strokeWidth={1.8} className="text-white/35 mt-0.5 flex-shrink-0" />
             <p className="text-sm text-white/45 font-outfit leading-relaxed">
               The full diagnostic — 17 scenarios + 5 self-ratings — will measure your
               actual reasoning across Strategic Thinking, Product Sense, Execution Depth,
@@ -280,10 +247,10 @@ export default function InsightPage() {
                   "0 0 24px rgba(74,108,247,0.35), 0 0 48px rgba(107,91,255,0.15)",
               }}
             >
-              Unlock full diagnostic →
+              Get my full PM assessment →
             </button>
             <p className="text-center text-xs text-white/25 font-outfit">
-              22 questions · ~12 minutes · free
+              22 questions · ~12 minutes · ₹499 one-time
             </p>
           </div>
         </FadeUp>

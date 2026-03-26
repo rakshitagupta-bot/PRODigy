@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import type { Variants } from "framer-motion";
 import Link from "next/link";
+import { Target, Dna, RefreshCw, Crosshair, MessageCircle, BarChart2, Compass, Wrench } from "lucide-react";
 
 // ─── Animation helpers ────────────────────────────────────────────────────────
 
@@ -128,7 +129,7 @@ function ScorePreviewCard() {
         {/* Archetype chip */}
         <div className="pt-1 border-t border-white/[0.05]">
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#4A6CF7]/15 text-[#8B8FFF] border border-[#6B5BFF]/30 font-outfit">
-            ⚙️ Target Archetype: The Technical Architect PM
+            <Wrench size={11} strokeWidth={2} /> Target Archetype: The Technical Architect PM
           </span>
         </div>
       </div>
@@ -140,17 +141,17 @@ function ScorePreviewCard() {
 
 const valueProps = [
   {
-    icon: "🎯",
+    icon: <Target size={22} strokeWidth={1.6} />,
     title: "Clarity of Outcome",
     body: "Know exactly which PM roles match your background instead of applying blindly to every 'Associate PM' posting.",
   },
   {
-    icon: "🧬",
+    icon: <Dna size={22} strokeWidth={1.6} />,
     title: "The Archetype System",
     body: "Map your professional DNA to one of 5 PM archetypes. Leverage your strengths as a 'Strategist' or 'Builder.'",
   },
   {
-    icon: "🔄",
+    icon: <RefreshCw size={22} strokeWidth={1.6} />,
     title: "Gap-Closing Roadmap",
     body: "A week-by-week plan that fixes what you're missing before you face a recruiter at Razorpay or Zomato.",
   },
@@ -159,10 +160,10 @@ const valueProps = [
 // ─── Archetypes ───────────────────────────────────────────────────────────────
 
 const miniArchetypes = [
-  { icon: "🎯", name: "Strategist", desc: "Turns market insight into roadmaps" },
-  { icon: "💬", name: "Advocate", desc: "Builds what people actually need" },
-  { icon: "📊", name: "Operator", desc: "Turns chaos into a repeatable machine" },
-  { icon: "🔭", name: "Explorer", desc: "Finds opportunities no one else sees" },
+  { icon: <Crosshair size={16} strokeWidth={1.8} />,    name: "Strategist", desc: "Turns market insight into roadmaps" },
+  { icon: <MessageCircle size={16} strokeWidth={1.8} />, name: "Advocate",   desc: "Builds what people actually need" },
+  { icon: <BarChart2 size={16} strokeWidth={1.8} />,    name: "Operator",   desc: "Turns chaos into a repeatable machine" },
+  { icon: <Compass size={16} strokeWidth={1.8} />,      name: "Explorer",   desc: "Finds opportunities no one else sees" },
 ];
 
 // ─── Steps ────────────────────────────────────────────────────────────────────
@@ -170,23 +171,18 @@ const miniArchetypes = [
 const steps = [
   {
     n: "01",
-    title: "Assessment",
-    body: "Benchmark your skills across 5 core PM dimensions. 22 questions, 12 minutes.",
+    title: "Know yourself",
+    body: "3 warm-up questions + 13 scenarios. No jargon. No timer. Just your instincts.",
   },
   {
     n: "02",
-    title: "Archetype",
-    body: "Identify your PM persona and understand which companies and roles match your strengths.",
+    title: "Get your archetype",
+    body: "One of 5 PM archetypes with a skill map across 20 categories.",
   },
   {
     n: "03",
-    title: "Roadmap",
-    body: "Execute a tailored week-by-week plan to close your specific gaps — not generic content.",
-  },
-  {
-    n: "04",
-    title: "Hired",
-    body: "Walk into interviews with clarity, confidence, and the readiness score to prove it.",
+    title: "Follow your path",
+    body: "A week-by-week roadmap built for your archetype and your specific gaps.",
   },
 ];
 
@@ -194,25 +190,9 @@ const steps = [
 
 const testimonials = [
   {
-    quote:
-      "3 years in consulting. Everyone says I'm ready. I had no idea if that was true — until this.",
-    name: "Ananya S.",
-    from: "Strategy Consultant",
-    to: "APM at Razorpay",
-  },
-  {
-    quote:
-      "I was applying to 30 PM roles a week. This told me I was targeting the wrong ones for my profile.",
-    name: "Karan M.",
-    from: "SDE-2",
-    to: "PM at a Series B fintech",
-  },
-  {
-    quote:
-      "The archetype system showed me I was a natural Advocate. That changed how I positioned myself.",
-    name: "Priya D.",
-    from: "UX Designer",
-    to: "PM at CRED",
+    quote: "I'd been reading PM content for months. This was the first thing that told me something specific about me.",
+    name: "Rohit S.",
+    role: "ex-SDE2, now APM at a Series B fintech",
   },
 ];
 
@@ -243,7 +223,7 @@ function CTAButton({
         animation: "shimmer 2.4s linear infinite",
       }}
     >
-      Check your PM readiness →
+      Discover your PM strengths →
     </Link>
   );
 }
@@ -267,13 +247,13 @@ export default function LandingPage() {
         <section className="flex flex-col items-center text-center space-y-6">
           <FadeUp delay={0}>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-outfit bg-[#4A6CF7]/15 text-[#8B8FFF] border border-[#6B5BFF]/30">
-              ✦ Free PM Readiness Assessment
+              ✦ PRODigy
             </span>
           </FadeUp>
 
           <FadeUp delay={1}>
             <h1 className="font-serif text-[clamp(36px,8vw,52px)] leading-tight text-white">
-              Stop Guessing.{" "}
+              Your background is your biggest{" "}
               <span
                 style={{
                   background: "linear-gradient(135deg, #4A6CF7, #8B5CF6)",
@@ -282,23 +262,15 @@ export default function LandingPage() {
                   fontStyle: "italic",
                 }}
               >
-                Start Getting Hired.
+                PM advantage.
               </span>
             </h1>
           </FadeUp>
 
           <FadeUp delay={2}>
             <p className="text-white/65 text-lg font-outfit leading-relaxed max-w-[520px]">
-              The first PM transition platform built for the Indian market that
-              tells you exactly where you stand — and gets you ready for
-              top-tier roles.
-            </p>
-          </FadeUp>
-
-          <FadeUp delay={2.5}>
-            <p className="text-white/35 text-sm font-outfit italic">
-              Preparing for PM but not getting calls? Don&apos;t know if
-              you&apos;re ready? We&apos;ve got you.
+              Most PM advice assumes you&apos;re starting from zero. You&apos;re not.
+              Find out exactly where you stand.
             </p>
           </FadeUp>
 
@@ -308,7 +280,7 @@ export default function LandingPage() {
 
           <FadeUp delay={3.5}>
             <p className="text-white/35 text-xs font-outfit tracking-wide">
-              Free · 12 min · No signup needed
+              15 minutes · No signup required to start
             </p>
           </FadeUp>
         </section>
@@ -359,7 +331,7 @@ export default function LandingPage() {
             {valueProps.map((v, i) => (
               <FadeUp key={v.title} delay={i * 0.5}>
                 <div className="rounded-2xl p-5 bg-[rgba(21,26,46,0.7)] backdrop-blur-xl border border-white/[0.06] h-full space-y-3">
-                  <span className="text-2xl">{v.icon}</span>
+                  <span className="text-[#8B8FFF]">{v.icon}</span>
                   <h3 className="font-semibold text-white font-outfit">{v.title}</h3>
                   <p className="text-sm text-white/55 font-outfit leading-relaxed">
                     {v.body}
@@ -394,7 +366,9 @@ export default function LandingPage() {
               }}
             >
               <div className="flex items-start gap-4">
-                <span className="text-4xl">⚙️</span>
+                <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#4A6CF7]/15 text-[#8B8FFF] flex-shrink-0">
+                  <Wrench size={22} strokeWidth={1.6} />
+                </span>
                 <div>
                   <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-[#4A6CF7]/20 text-[#8B8FFF] font-outfit mb-2">
                     Recommended for Engineers
@@ -428,7 +402,7 @@ export default function LandingPage() {
             {miniArchetypes.map((a, i) => (
               <FadeUp key={a.name} delay={i * 0.3}>
                 <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06] space-y-2">
-                  <span className="text-xl">{a.icon}</span>
+                  <span className="text-[#8B8FFF]">{a.icon}</span>
                   <h4 className="font-semibold text-white text-sm font-outfit">
                     {a.name}
                   </h4>
@@ -442,8 +416,11 @@ export default function LandingPage() {
         {/* ── HOW IT WORKS ───────────────────────────────────────────── */}
         <section className="space-y-6">
           <FadeUp>
-            <h2 className="text-center text-xl font-bold font-outfit text-white/90">
+            <p className="text-center text-[10px] font-semibold font-outfit text-white/30 uppercase tracking-widest">
               How it works
+            </p>
+            <h2 className="text-center text-2xl font-bold font-serif text-white mt-2">
+              Three steps. One session. Real clarity.
             </h2>
           </FadeUp>
           <div className="relative">
@@ -474,15 +451,15 @@ export default function LandingPage() {
         {/* ── TESTIMONIALS ───────────────────────────────────────────── */}
         <section className="space-y-4">
           <FadeUp>
-            <h2 className="text-center text-xl font-bold font-outfit text-white/90">
-              What they said
-            </h2>
+            <p className="text-center text-[10px] font-semibold font-outfit text-white/30 uppercase tracking-widest">
+              What people say
+            </p>
           </FadeUp>
           <div className="space-y-3">
             {testimonials.map((t, i) => (
               <FadeUp key={t.name} delay={i * 0.3}>
-                <div className="rounded-2xl p-5 bg-[rgba(21,26,46,0.7)] backdrop-blur-xl border border-white/[0.06] space-y-3">
-                  <p className="text-white/80 font-outfit text-sm leading-relaxed italic">
+                <div className="rounded-2xl p-5 bg-[rgba(21,26,46,0.7)] backdrop-blur-xl border border-white/[0.06] space-y-4">
+                  <p className="text-white/80 font-outfit text-base leading-relaxed italic">
                     &ldquo;{t.quote}&rdquo;
                   </p>
                   <div className="flex items-center gap-2">
@@ -494,8 +471,7 @@ export default function LandingPage() {
                         {t.name}
                       </span>
                       <span className="text-xs text-white/35 font-outfit">
-                        {" "}
-                        · {t.from} → {t.to}
+                        {" "}· {t.role}
                       </span>
                     </div>
                   </div>

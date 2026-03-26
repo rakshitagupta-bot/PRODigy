@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
+import { BarChart2, Map, LayoutDashboard } from "lucide-react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AssessmentDimension } from "@/types";
 import type { ScoreProfile } from "@/lib/scoring";
@@ -42,25 +43,9 @@ function BottomNav() {
   const pathname = usePathname();
 
   const links = [
-    { label: "Report", href: "/report", icon: (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <rect x="3" y="3" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
-        <rect x="10" y="3" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
-        <rect x="3" y="10" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
-        <rect x="10" y="10" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
-      </svg>
-    )},
-    { label: "Roadmap", href: "/roadmap", icon: (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M3 9h12M9 3l6 6-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    )},
-    { label: "Dashboard", href: "/dashboard", icon: (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.4"/>
-        <path d="M9 6v3l2 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
-      </svg>
-    )},
+    { label: "Report",    href: "/report",    icon: <BarChart2 size={20} strokeWidth={1.6} /> },
+    { label: "Roadmap",   href: "/roadmap",   icon: <Map size={20} strokeWidth={1.6} /> },
+    { label: "Dashboard", href: "/dashboard", icon: <LayoutDashboard size={20} strokeWidth={1.6} /> },
   ];
 
   return (
