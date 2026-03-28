@@ -86,11 +86,12 @@ function PaymentPageInner() {
       } catch {}
     }
 
-    // Already paid — check if assessment done
+    // Already paid — check if assessment was completed after payment
     const paid = localStorage.getItem("prodigy_paid");
     if (paid) {
-      const hasScore = localStorage.getItem("prodigy_score");
-      router.replace(hasScore ? "/results" : "/assessment");
+      // Only skip assessment if score exists AND was generated post-payment
+      const hasPostPaymentScore = localStorage.getItem("prodigy_assessment_done");
+      router.replace(hasPostPaymentScore ? "/results" : "/assessment");
       return;
     }
 
@@ -99,6 +100,9 @@ function PaymentPageInner() {
     if (urlPaymentId) {
       setPaymentId(urlPaymentId);
       localStorage.setItem("prodigy_paid", urlPaymentId);
+      // Clear any stale score so the full assessment is always required after payment
+      localStorage.removeItem("prodigy_score");
+      sessionStorage.removeItem("prodigy_score");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -127,6 +131,9 @@ function PaymentPageInner() {
   function handleContinue() {
     if (!paymentId.trim()) return;
     localStorage.setItem("prodigy_paid", paymentId.trim());
+    // Clear any stale score so the full assessment is always required after payment
+    localStorage.removeItem("prodigy_score");
+    sessionStorage.removeItem("prodigy_score");
     router.push("/assessment");
   }
 

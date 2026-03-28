@@ -175,6 +175,8 @@ function AssessmentContent() {
 
       // Persist to sessionStorage so /results can read it
       sessionStorage.setItem("prodigy_score", JSON.stringify(profile));
+      // Mark assessment as completed post-payment so payment page can skip to results on revisit
+      localStorage.setItem("prodigy_assessment_done", "1");
 
       // Pass minimal params in URL for SSR-friendly linking
       const urlParams = new URLSearchParams({
